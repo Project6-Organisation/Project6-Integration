@@ -26,4 +26,4 @@ jobs:
         run: |
           echo "Running npm tests"
           npm ci
-          ng test --watch=false --browsers=ChromeHeadless
+          ng test -- --watch=false --browsers=ChromeHeadless
