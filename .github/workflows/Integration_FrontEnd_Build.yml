@@ -1,10 +1,10 @@
-name: Integration_FrontEnd_Test
+name: Integration_FrontEnd_Build
 
 on:
   workflow_call:
 
 jobs:
-  FrontEnd_Test:
+  FrontEnd_Build:
     runs-on: ubuntu-latest
 
     defaults:
@@ -21,9 +21,9 @@ jobs:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Run npm tests        
+      - name: Build FrontEnd application
         if: success()
         run: |
-          echo "Running npm tests"
+          echo "Building FrontEnd application"
           npm ci
-          npm test -- --watch=false --browsers=ChromeHeadless
+          npm run build

@@ -1,10 +1,10 @@
-name: Integration_BackEnd_Test
+name: Integration_BackEnd_Build
 
 on:
   workflow_call:
 
 jobs:
-  BackEnd_Test:
+  BackEnd_Build:
     runs-on: ubuntu-latest
 
     defaults:
@@ -23,9 +23,9 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-      - name: Run Gradle tests        
+      - name: Build BackEnd application
         if: success()
         run: |
-          echo "Running Gradle tests"
+          echo "Building BackEnd application"
           chmod +x ./gradlew
-          ./gradlew clean test
+          ./gradlew clean build -x test

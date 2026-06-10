@@ -23,10 +23,22 @@ jobs:
           echo "Caller branch: ${{ github.ref_name }}"
           echo "Called workflow branch: develop"      
 
-  BackEnd_Test:    
+  BackEnd_Build:
+    uses: ./.github/workflows/Integration_BackEnd_Build.yml
+    secrets: inherit
+    
+  FrontEnd_Build:
+    uses: ./.github/workflows/Integration_FrontEnd_Build.yml
+    secrets: inherit
+
+  BackEnd_Test:
+    needs:
+      - BackEnd_Build
     uses: ./.github/workflows/Integration_BackEnd_Test.yml
     secrets: inherit
 
   FrontEnd_Test:
+    needs:
+      - FrontEnd_Build
     uses: ./.github/workflows/Integration_FrontEnd_Test.yml
     secrets: inherit
