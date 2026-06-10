@@ -6,6 +6,11 @@ on:
 jobs:
   FrontEnd_Test:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./back
+        
     steps:
       - uses: actions/checkout@v4
       
