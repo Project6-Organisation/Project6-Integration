@@ -1,4 +1,4 @@
-name: 01_Integration_BackEnd_Tests
+name: Integration_BackEnd_Tests
 
 on:
   workflow_call:
