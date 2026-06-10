@@ -1,0 +1,41 @@
+name: 01_Integration
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: read
+  
+jobs:
+  Check-variables:
+    runs-on: ubuntu-latest
+    steps:      
+      
+      - name: Check origin input
+        run: |
+          echo "Origin: ${{ inputs.origin }}"
+          if [ "${{ inputs.origin }}" != "java" ] && [ "${{ inputs.origin }}" != "angular" ]; then
+            echo "Invalid origin: ${{ inputs.origin }}"
+            echo "Allowed values: java, angular"
+            exit 1
+          fi
+
+      - name: Show trigger type
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+      
+      - name: Show caller & called workflow branch
+        run: |
+          echo "Caller branch: ${{ github.ref_name }}"
+          echo "Called workflow branch: develop"      
+
+  BackEnd_Test:    
+    uses: ./.github/workflows/01_Integration_BackEnd_Test.yml
+    secrets: inherit
+
+  FrontEnd_Test:
+    uses: ./.github/workflows/01_Integration_FrontEnd_Test.yml
+    secrets: inherit
