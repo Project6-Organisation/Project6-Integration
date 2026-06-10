@@ -1,4 +1,4 @@
-name: 01_Integration
+name: Continuous Integration
 
 on:
   workflow_call:
@@ -24,9 +24,9 @@ jobs:
           echo "Called workflow branch: develop"      
 
   BackEnd_Test:    
-    uses: ./.github/workflows/01_Integration_BackEnd_Test.yml
+    uses: ./.github/workflows/Integration_BackEnd_Test.yml
     secrets: inherit
 
   FrontEnd_Test:
-    uses: ./.github/workflows/01_Integration_FrontEnd_Test.yml
+    uses: ./.github/workflows/Integration_FrontEnd_Test.yml
     secrets: inherit
