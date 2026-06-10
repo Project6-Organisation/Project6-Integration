@@ -9,8 +9,8 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./back
-        
+        working-directory: ./front
+
     steps:
       - uses: actions/checkout@v4
       
