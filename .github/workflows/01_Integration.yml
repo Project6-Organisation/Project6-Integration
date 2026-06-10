@@ -13,16 +13,7 @@ jobs:
   Check-variables:
     runs-on: ubuntu-latest
     steps:      
-      
-      - name: Check origin input
-        run: |
-          echo "Origin: ${{ inputs.origin }}"
-          if [ "${{ inputs.origin }}" != "java" ] && [ "${{ inputs.origin }}" != "angular" ]; then
-            echo "Invalid origin: ${{ inputs.origin }}"
-            echo "Allowed values: java, angular"
-            exit 1
-          fi
-
+            
       - name: Show trigger type
         run: |
           echo "Triggered by: ${{ github.event_name }}"
