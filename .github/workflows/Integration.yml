@@ -31,7 +31,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           [ -n "$SONAR_TOKEN" ] && echo "SONAR_TOKEN OK" || echo "SONAR_TOKEN IS MISSING"
-
+  
   # Applications build
   BackEnd_Build:
     uses: ./.github/workflows/Integration_BackEnd_Build.yml
