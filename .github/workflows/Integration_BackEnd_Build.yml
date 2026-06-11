@@ -55,6 +55,20 @@ jobs:
           echo "Building BackEnd application"
           ./gradlew clean build -x test sonar --info -Dsonar.qualitygate.wait=true
 
+      # - name: Display SonarQube Quality Gate summary
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   run: |
+      #     PROJECT_KEY="Project6-Organisation_Project6-Application"
+      #     BRANCH="${GITHUB_REF_NAME}"
+
+      #     curl -s -u "$SONAR_TOKEN:" \
+      #       "https://sonarcloud.io/api/qualitygates/project_status?projectKey=$PROJECT_KEY&branch=$BRANCH" \
+      #       | jq -r '
+      #         .projectStatus.conditions[]
+      #         | "\(.metricKey): \(.status) - actual=\(.actualValue // "n/a") threshold=\(.errorThreshold // "n/a")"
+      #       '
+
       - name: Display SonarQube Quality Gate summary
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -62,9 +76,40 @@ jobs:
           PROJECT_KEY="Project6-Organisation_Project6-Application"
           BRANCH="${GITHUB_REF_NAME}"
 
-          curl -s -u "$SONAR_TOKEN:" \
-            "https://sonarcloud.io/api/qualitygates/project_status?projectKey=$PROJECT_KEY&branch=$BRANCH" \
-            | jq -r '
-              .projectStatus.conditions[]
-              | "\(.metricKey): \(.status) - actual=\(.actualValue // "n/a") threshold=\(.errorThreshold // "n/a")"
-            '
+          echo "========================================"
+          echo "SONARQUBE QUALITY GATE"
+          echo "========================================"
+
+          RESPONSE=$(curl -s -u "$SONAR_TOKEN:" \
+            "https://sonarcloud.io/api/qualitygates/project_status?projectKey=$PROJECT_KEY&branch=$BRANCH")
+
+          STATUS=$(echo "$RESPONSE" | jq -r '.projectStatus.status')
+
+          echo "QUALITY GATE STATUS: $STATUS"
+          echo ""
+
+          echo "$RESPONSE" | jq -r '
+            .projectStatus.conditions[]
+            | if .metricKey == "new_coverage" then
+                "Coverage >= " + .errorThreshold + "%                " + (if .status == "OK" then "✅" else "❌" end) + " actual=" + (.actualValue // "n/a") + "%"
+              elif .metricKey == "new_duplicated_lines_density" then
+                "Duplications <= " + .errorThreshold + "%             " + (if .status == "OK" then "✅" else "❌" end) + " actual=" + (.actualValue // "n/a") + "%"
+              elif .metricKey == "new_maintainability_rating" then
+                "Maintainability Rating = A     " + (if .status == "OK" then "✅" else "❌" end)
+              elif .metricKey == "new_reliability_rating" then
+                "Reliability Rating = A         " + (if .status == "OK" then "✅" else "❌" end)
+              elif .metricKey == "new_security_rating" then
+                "Security Rating = A            " + (if .status == "OK" then "✅" else "❌" end)
+              elif .metricKey == "new_security_hotspots_reviewed" then
+                "Security Hotspots Reviewed     " + (if .status == "OK" then "✅" else "❌" end) + " actual=" + (.actualValue // "n/a") + "%"
+              else
+                empty
+              end
+          '
+
+          echo "========================================"
+
+          if [ "$STATUS" != "OK" ]; then
+            echo "Quality Gate failed"
+            exit 1
+          fi

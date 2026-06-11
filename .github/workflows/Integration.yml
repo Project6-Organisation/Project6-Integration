@@ -24,7 +24,7 @@ jobs:
       - name: Show caller & called workflow branch
         run: |
           echo "Caller branch: ${{ github.ref_name }}"
-          echo "Called workflow branch: develop"
+          echo "Called pipeline branch: main"
 
       - name: Check SonarQube token
         env:
@@ -53,11 +53,3 @@ jobs:
       - FrontEnd_Build
     uses: ./.github/workflows/Integration_FrontEnd_Test.yml
     secrets: inherit
-
-  # SonarQube analysis
-  # BackEnd_SonarQube:
-  #   needs:
-  #     - BackEnd_Build
-  #     - BackEnd_Test
-  #   uses: ./.github/workflows/Integration_BackEnd_SonarQube.yml
-  #   secrets: inherit
