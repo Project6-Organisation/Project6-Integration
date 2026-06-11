@@ -59,4 +59,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           echo "Building BackEnd application"
-          ./gradlew clean build -x test sonar --info
+          ./gradlew clean build -x test sonar --info -Dsonar.qualitygate.wait=true
