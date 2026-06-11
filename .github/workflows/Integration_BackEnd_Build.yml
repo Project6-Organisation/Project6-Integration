@@ -32,7 +32,7 @@ jobs:
       - name: Fix permissions
         run: |
           chmod +x ./gradlew
-          chmod +x scripts/sonar_quality_gate_summary.py
+          chmod +x scripts/sonar_quality_gate_summary.sh
                
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -61,9 +61,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          python scripts/sonar_quality_gate_summary.py \
-            --project-key "Project6-Organisation_Project6-Application" \
-            --branch "${GITHUB_REF_NAME}"
+          ./scripts/sonar-quality-gate-summary.sh \
+            "Project6-Organisation_Project6-Application" \
+            "${GITHUB_REF_NAME}"
 
       # - name: Display SonarQube Quality Gate summary
       #   env:
