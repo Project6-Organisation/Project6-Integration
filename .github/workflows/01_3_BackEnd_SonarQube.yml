@@ -33,6 +33,10 @@ jobs:
           name: backend-build
           path: back/build
 
+      - name: Fix permissions for Gradle
+        run: |
+          chmod +x ./gradlew
+
       - name: Fix permissions for SonarQube Quality Gate summary script
         working-directory: integration
         run: |
