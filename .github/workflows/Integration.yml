@@ -27,7 +27,7 @@ jobs:
           echo "Called workflow branch: develop"
 
       - name: Check SonarQube token
-          env:
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           [ -n "$SONAR_TOKEN" ] && echo "SONAR_TOKEN OK" || echo "SONAR_TOKEN IS MISSING"
