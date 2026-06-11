@@ -13,27 +13,34 @@ jobs:
     
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./back
+    # defaults:
+    #   run:
+    #     working-directory: ./back
     
     steps:
 
-      - uses: actions/checkout@v4
+      - name: Checkout repository Application
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          path: application
 
-      - name: Check Java version
-        run: |
-          which java
-          java -version
-          echo $JAVA_HOME
-
-      - name: Fix permissions
+      - name: Checkout  repository Integration
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+          
+      - name: Fix permissions for Gradle
+        working-directory: application/back
         run: |
           chmod +x ./gradlew
+
+      - name: Fix permissions for SonarQube Quality Gate summary script
+        working-directory: integration
+        run: |
           chmod +x scripts/sonar-quality-gate-summary.sh
-               
+
       - name: Cache Gradle
         uses: actions/cache@v4
         if: success()
@@ -51,6 +58,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
       
       - name: Build BackEnd application and analyze
+        working-directory: application/back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -58,6 +66,7 @@ jobs:
           ./gradlew clean build -x test sonar --info -Dsonar.qualitygate.wait=true
 
       - name: Display SonarQube Quality Gate summary
+        working-directory: integration
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
