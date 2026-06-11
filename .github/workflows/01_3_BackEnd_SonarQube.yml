@@ -31,7 +31,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: backend-build
-          path: back/build
+          path: application/back/build
       
       - name: Fix permissions for SonarQube Quality Gate summary script
         working-directory: integration
@@ -45,14 +45,17 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       
+      - name: Copy Sonar properties
+        run: |
+          cp integration/sonar/sonar-backend.properties \
+            application/back/sonar-project.properties
+
       - name: Analyze BackEnd application with SonarQube
-        working-directory: integration
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectBaseDir: application/back
-          args: >
-            -Dsonar.qualitygate.wait=true
+          projectBaseDir: application/back          
 
       - name: Display SonarQube Quality Gate summary
         working-directory: integration
