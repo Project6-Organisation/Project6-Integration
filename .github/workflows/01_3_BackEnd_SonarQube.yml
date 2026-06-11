@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           path: application
 
-      - name: Checkout  repository Integration
+      - name: Checkout repository Integration
         uses: actions/checkout@v4
         with:
           repository: Project6-Organisation/Project6-Integration
@@ -32,11 +32,7 @@ jobs:
         with:
           name: backend-build
           path: back/build
-
-      - name: Fix permissions for Gradle
-        run: |
-          chmod +x ./gradlew
-
+      
       - name: Fix permissions for SonarQube Quality Gate summary script
         working-directory: integration
         run: |
@@ -50,12 +46,13 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
       
       - name: Analyze BackEnd application with SonarQube
-        working-directory: application/back
+        working-directory: integration
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          echo "Analyze BackEnd application with SonarQube"
-          ./gradlew sonar --info -Dsonar.qualitygate.wait=true
+        with:
+          projectBaseDir: application/back
+          args: >
+            -Dsonar.qualitygate.wait=true
 
       - name: Display SonarQube Quality Gate summary
         working-directory: integration
