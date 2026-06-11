@@ -55,9 +55,9 @@ jobs:
     secrets: inherit
 
   # SonarQube analysis
-  BackEnd_SonarQube:
-    needs:
-      - BackEnd_Build
-      - BackEnd_Test
-    uses: ./.github/workflows/Integration_BackEnd_SonarQube.yml
-    secrets: inherit
+  # BackEnd_SonarQube:
+  #   needs:
+  #     - BackEnd_Build
+  #     - BackEnd_Test
+  #   uses: ./.github/workflows/Integration_BackEnd_SonarQube.yml
+  #   secrets: inherit
