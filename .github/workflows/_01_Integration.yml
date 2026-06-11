@@ -31,25 +31,29 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           [ -n "$SONAR_TOKEN" ] && echo "SONAR_TOKEN OK" || echo "SONAR_TOKEN IS MISSING"
-  
-  # Applications build
+    
   BackEnd_Build:
-    uses: ./.github/workflows/Integration_BackEnd_Build.yml
+    uses: ./.github/workflows/01_1_BackEnd_Build.yml
     secrets: inherit
     
-  FrontEnd_Build:
-    uses: ./.github/workflows/Integration_FrontEnd_Build.yml
-    secrets: inherit
-
-  # Applications tests
   BackEnd_Test:
     needs:
       - BackEnd_Build
-    uses: ./.github/workflows/Integration_BackEnd_Test.yml
+    uses: ./.github/workflows/01_2_BackEnd_Test.yml
+    secrets: inherit
+
+  BackEnd_SonarQube:
+    needs:
+      - BackEnd_Build
+    uses: ./.github/workflows/01_3_BackEnd_SonarQube.yml
+    secrets: inherit
+    
+  FrontEnd_Build:
+    uses: ./.github/workflows/01_4_FrontEnd_Build.yml
     secrets: inherit
 
   FrontEnd_Test:
     needs:
       - FrontEnd_Build
-    uses: ./.github/workflows/Integration_FrontEnd_Test.yml
+    uses: ./.github/workflows/01_5_FrontEnd_Test.yml
     secrets: inherit
