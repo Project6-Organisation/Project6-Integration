@@ -5,6 +5,7 @@ on:
 
 jobs:
   BackEnd_Test:
+    name: Test BackEnd application
     runs-on: ubuntu-latest
 
     defaults:

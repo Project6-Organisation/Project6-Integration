@@ -2,6 +2,9 @@ name: Integration
 
 on:
   workflow_call:
+    secrets:
+        SONAR_TOKEN:
+          required: false
 
 permissions:
   contents: write
@@ -21,8 +24,15 @@ jobs:
       - name: Show caller & called workflow branch
         run: |
           echo "Caller branch: ${{ github.ref_name }}"
-          echo "Called workflow branch: develop"      
+          echo "Called workflow branch: develop"
 
+      - name: Check SonarQube token
+          env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          [ -n "$SONAR_TOKEN" ] && echo "SONAR_TOKEN OK" || echo "SONAR_TOKEN IS MISSING"
+
+  # Applications build
   BackEnd_Build:
     uses: ./.github/workflows/Integration_BackEnd_Build.yml
     secrets: inherit
@@ -31,6 +41,7 @@ jobs:
     uses: ./.github/workflows/Integration_FrontEnd_Build.yml
     secrets: inherit
 
+  # Applications tests
   BackEnd_Test:
     needs:
       - BackEnd_Build
@@ -41,4 +52,12 @@ jobs:
     needs:
       - FrontEnd_Build
     uses: ./.github/workflows/Integration_FrontEnd_Test.yml
+    secrets: inherit
+
+  # SonarQube analysis
+  BackEnd_SonarQube:
+    needs:
+      - BackEnd_Build
+      - BackEnd_Test
+    uses: ./.github/workflows/Integration_BackEnd_SonarQube.yml
     secrets: inherit
