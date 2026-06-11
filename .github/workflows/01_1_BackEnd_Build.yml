@@ -9,7 +9,7 @@ on:
 jobs:
   BackEnd_Build:
     
-    name: Build BackEnd application and analyze with SonarQube
+    name: Build BackEnd application
     
     runs-on: ubuntu-latest
 
@@ -33,7 +33,6 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
       
       - name: Build BackEnd application
-        working-directory: application/back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |

@@ -44,7 +44,7 @@ jobs:
 
   BackEnd_SonarQube:
     needs:
-      - BackEnd_Build
+      - BackEnd_Test
     uses: ./.github/workflows/01_3_BackEnd_SonarQube.yml
     secrets: inherit
     
