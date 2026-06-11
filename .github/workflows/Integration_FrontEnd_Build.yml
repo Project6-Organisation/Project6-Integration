@@ -5,7 +5,9 @@ on:
 
 jobs:
   FrontEnd_Build:
+    
     name: Build FrontEnd application
+    
     runs-on: ubuntu-latest
 
     defaults:

@@ -5,7 +5,9 @@ on:
 
 jobs:
   FrontEnd_Test:
+    
     name: Test FrontEnd application
+    
     runs-on: ubuntu-latest
 
     defaults:
