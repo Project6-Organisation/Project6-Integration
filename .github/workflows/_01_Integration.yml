@@ -43,6 +43,8 @@ jobs:
     secrets: inherit
 
   BackEnd_SonarQube:
+    if: |
+      github.ref_name == 'develop'
     needs:
       - BackEnd_Test
     uses: ./.github/workflows/01_3_BackEnd_SonarQube.yml
