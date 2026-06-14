@@ -5,6 +5,10 @@ on:
     secrets:
         SONAR_TOKEN:
           required: false
+    inputs:
+      origin:
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -23,8 +27,13 @@ jobs:
       
       - name: Show caller & called workflow branch
         run: |
-          echo "Caller branch: ${{ github.ref_name }}"
-          echo "Called pipeline branch: main"
+          if [ "${{ inputs.origin }}" == "manual-trigger" ]; then
+            echo "Caller branch: ${{ github.ref_name }}"
+            echo "Called pipeline branch: develop"
+          else
+            echo "Caller branch: ${{ github.ref_name }}"
+            echo "Called pipeline branch: main"
+          fi
 
       - name: Check SonarQube token
         env:
