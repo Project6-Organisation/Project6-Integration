@@ -16,13 +16,13 @@ jobs:
     steps:
 
       - name: Checkout repository Application
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           path: application
 
       - name: Checkout repository Integration
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: Project6-Organisation/Project6-Integration
           path: integration
@@ -84,13 +84,13 @@ jobs:
 #     steps:
 
 #       - name: Checkout repository Application
-#         uses: actions/checkout@v4
+#         uses: actions/checkout@v6
 #         with:
 #           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 #           path: application
 
 #       - name: Checkout  repository Integration
-#         uses: actions/checkout@v4
+#         uses: actions/checkout@v6
 #         with:
 #           repository: Project6-Organisation/Project6-Integration
 #           path: integration
