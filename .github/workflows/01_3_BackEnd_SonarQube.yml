@@ -37,7 +37,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: jacoco-report
-          path: build/reports/jacoco/test
+          path: application/back/build/reports/jacoco/test
       
       - name: Fix permissions for SonarQube Quality Gate summary script
         working-directory: integration
