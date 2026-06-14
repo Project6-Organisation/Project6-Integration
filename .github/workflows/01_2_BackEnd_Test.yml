@@ -32,3 +32,9 @@ jobs:
           echo "Running Gradle tests with coverage report"
           chmod +x ./gradlew
           ./gradlew clean test jacocoTestReport
+
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/jacocoTestReport.xml
