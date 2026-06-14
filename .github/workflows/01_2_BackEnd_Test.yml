@@ -29,6 +29,6 @@ jobs:
       - name: Run Gradle tests        
         if: success()
         run: |
-          echo "Running Gradle tests"
+          echo "Running Gradle tests with coverage report"
           chmod +x ./gradlew
-          ./gradlew clean test
+          ./gradlew clean test jacocoTestReport
