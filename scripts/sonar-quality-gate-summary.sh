@@ -131,7 +131,7 @@ echo "$METRICS_RESPONSE" | jq -r '
   "  Bugs               : " + value("bugs"),
   "  Code Smells        : " + value("code_smells"),
   "",  
-  "Duplicated Lines    : " + value("new_duplicated_lines"),
+  "Duplicated Lines     : " + value("new_duplicated_lines"),
   "",
   "Coverage             : " + value("coverage") + "%",
   " Lines to cover      : " + value("lines_to_cover"),
