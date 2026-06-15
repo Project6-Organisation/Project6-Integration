@@ -9,9 +9,9 @@ on:
           required: true
 
 jobs:
-  Snyk_BackEnd:
-    name: Snyk BackEnd Dependencies
-    runs-on: ubuntu-latest
+  # Snyk_BackEnd:
+  #   name: Snyk BackEnd Dependencies
+  #   runs-on: ubuntu-latest
 
     # steps:
     #   - name: Checkout Application
