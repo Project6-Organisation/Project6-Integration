@@ -7,6 +7,8 @@ on:
           required: false
         SONAR_TOKEN_FRONTEND:
           required: false
+        SNYK_TOKEN:
+          required: false
     inputs:
       origin:
         required: false
@@ -81,6 +83,13 @@ jobs:
     uses: ./.github/workflows/01_6_FrontEnd_SonarQube.yml
     secrets: inherit
 
+  Snyk_Scan:
+    needs:
+      - BackEnd_Build
+      - FrontEnd_Test
+    uses: ./.github/workflows/01_7_Snyk.yml
+    secrets: inherit
+
   CI_Status:
     name: CI Status
     runs-on: ubuntu-latest
@@ -92,6 +101,7 @@ jobs:
       - FrontEnd_Test
       - BackEnd_SonarQube
       - FrontEnd_SonarQube
+      - Snyk_Scan
 
     if: always()
 
