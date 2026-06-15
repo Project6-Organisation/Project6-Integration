@@ -37,18 +37,32 @@ echo "----------------------------------------"
 
 echo "$RESPONSE" | jq -r '
   .projectStatus.conditions[]
-  | if .metricKey == "new_reliability_rating" then
-      "Reliability                    " + (if .status == "OK" then "✅ A" else "❌ FAILED" end)
+  | if .metricKey == "new_coverage" then
+      "Coverage >= " + .errorThreshold + "%                " + 
+      (if .status == "OK" then "✅" else "❌" end) + 
+      " actual=" + (.actualValue // "n/a") + "%"
 
-    elif .metricKey == "new_security_rating" then
-      "Security                       " + (if .status == "OK" then "✅ A" else "❌ FAILED" end)
-
+    elif .metricKey == "new_duplicated_lines_density" then
+      "Duplications <= " + .errorThreshold + "%             " + 
+      (if .status == "OK" then "✅" else "❌" end) + 
+      " actual=" + (.actualValue // "n/a") + "%"
+    
     elif .metricKey == "new_maintainability_rating" then
-      "Maintainability                " + (if .status == "OK" then "✅ A" else "❌ FAILED" end)
-
+      "Maintainability Rating = A     " + 
+      (if .status == "OK" then "✅" else "❌" end)
+    
+    elif .metricKey == "new_reliability_rating" then
+      "Reliability Rating = A         " + 
+      (if .status == "OK" then "✅" else "❌" end)
+    
+    elif .metricKey == "new_security_rating" then
+      "Security Rating = A            " + 
+      (if .status == "OK" then "✅" else "❌" end)
+    
     elif .metricKey == "new_security_hotspots_reviewed" then
-      "Security Hotspots              " + (if .status == "OK" then "✅ " else "❌ " end) + (.actualValue // "n/a") + "%"
-
+      "Security Hotspots Reviewed     " + 
+      (if .status == "OK" then "✅" else "❌" end) + 
+      " actual=" + (.actualValue // "n/a") + "%"
     else
       empty
     end
