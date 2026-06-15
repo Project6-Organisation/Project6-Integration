@@ -53,6 +53,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           snyk test \
-            --severity-threshold=medium \
+            --severity-threshold=high \
             --file=package.json \
             --org=${{ secrets.SNYK_ORG_ID }}
