@@ -70,6 +70,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         run: |
           ./scripts/sonar-quality-gate-summary.sh \
-            "Project6-Organisation_Project6-Application" \
+            "Project6-Organisation_Project6-Application-Frontend" \
             "${GITHUB_REF_NAME}" \
             "FrontEnd"
