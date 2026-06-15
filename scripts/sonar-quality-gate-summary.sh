@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Metrics documentation: https://docs.sonarsource.com/sonarqube-cloud/managing-your-projects/metric-definitions
+
 set -euo pipefail
 
 PROJECT_KEY="${1:?PROJECT_KEY is required}"
@@ -67,6 +69,8 @@ echo "$METRICS_RESPONSE" | jq -r '
     end;
 
   "",
+  "Security            : " + rating("new_security_rating"),
+  "Security Hotspots   : " + rating("new_security_review_rating"),
   "Reliability         : " + rating("new_reliability_rating"),
   "Maintainability     : " + rating("new_sqale_rating"),
   "",
@@ -77,20 +81,17 @@ echo "$METRICS_RESPONSE" | jq -r '
   "  Minor             : " + value("new_minor_violations"),
   "  Info              : " + value("new_info_violations"), 
   "",
+  "Violations types",
+  "  Vulnerabilities   : " + value("new_vulnerabilities") + " (Remediation Effort: " + value("new_security_remediation_effort") + "mn)",
   "  Bugs              : " + value("new_bugs"),
   "  Code Smells       : " + value("new_code_smells"),
-  "  Duplicated Lines  : " + value("new_duplicated_lines"),
+  "",  
+  "Duplicated Lines    : " + value("new_duplicated_lines"),
   "",
   "Coverage            : " + value("new_coverage") + "%",
   " Lines to cover     : " + value("new_lines_to_cover"),
   " Uncovered lines    : " + value("new_uncovered_lines"),
   " Branch coverage    : " + value("new_branch_coverage"),
-  "",  
-  "Security            : " + rating("new_security_rating"),
-  " Vulnerabilities    : " + value("new_vulnerabilities"),
-  " Remediation Effort : " + value("new_security_remediation_effort") + "mn",
-  "",
-  "Security Hotspots   : " + rating("new_security_review_rating"),
   "" 
 '
 
@@ -113,6 +114,8 @@ echo "$METRICS_RESPONSE" | jq -r '
     end;
 
   "",
+  "Security             : " + rating("security_rating"),
+  "Security Hotspots    : " + rating("security_review_rating"),
   "Reliability          : " + rating("reliability_rating"),
   "Maintainability      : " + rating("sqale_rating"),
   "",
@@ -123,9 +126,12 @@ echo "$METRICS_RESPONSE" | jq -r '
   "  Minor              : " + value("minor_violations"),
   "  Info               : " + value("info_violations"), 
   "",
+  "Violations types",
+  "  Vulnerabilities    : " + value("vulnerabilities") + " (Remediation Effort: " + value("security_remediation_effort") + "mn)",
   "  Bugs               : " + value("bugs"),
   "  Code Smells        : " + value("code_smells"),
-  "  Duplicated Lines   : " + value("duplicated_lines"),
+  "",  
+  "Duplicated Lines    : " + value("new_duplicated_lines"),
   "",
   "Coverage             : " + value("coverage") + "%",
   " Lines to cover      : " + value("lines_to_cover"),
@@ -134,12 +140,6 @@ echo "$METRICS_RESPONSE" | jq -r '
   "",
   "Complexity           : " + value("complexity"),
   "Cognitive complexity : " + value("cognitive_complexity"),
-  "",
-  "Security             : " + rating("security_rating"),
-  " Vulnerabilities     : " + value("vulnerabilities"),
-  " Remediation Effort  : " + value("security_remediation_effort") + "mn",
-  "",
-  "Security Hotspots    : " + rating("security_review_rating"),
   "" 
 '
 
