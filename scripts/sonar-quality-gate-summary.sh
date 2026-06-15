@@ -27,7 +27,7 @@ duplicated_lines,new_duplicated_lines,\
 coverage,lines_to_cover,uncovered_lines,branch_coverage,new_coverage,new_lines_to_cover,new_uncovered_lines,new_branch_coverage,\
 vulnerabilities,security_rating,security_remediation_effort,new_vulnerabilities,new_security_rating,new_security_remediation_effort,\
 security_review_rating,new_security_review_rating,\
-complexity,cognitive_complexity, new_complexity,new_cognitive_complexity"
+complexity,cognitive_complexity"
 
 # Fetch metrics for both overall and new code
 METRICS_RESPONSE=$(curl -s -u "$SONAR_TOKEN:" \
@@ -51,6 +51,8 @@ echo "----------------------------------------"
 echo " NEW CODE"
 echo "----------------------------------------"
 
+# echo "$METRICS_RESPONSE"
+
 echo "$METRICS_RESPONSE" | jq -r '
   def value($metric):
     (.component.measures[]? | select(.metric == $metric) | .value) // "n/a";
@@ -65,33 +67,30 @@ echo "$METRICS_RESPONSE" | jq -r '
     end;
 
   "",
-  "Reliability          : " + rating("new_reliability_rating"),
-  "Maintainability      : " + rating("new_sqale_rating"),
+  "Reliability         : " + rating("new_reliability_rating"),
+  "Maintainability     : " + rating("new_sqale_rating"),
   "",
-  "Violations           : " + value("new_violations"),
-  "  Blocker            : " + value("new_blocker_violations"),
-  "  Critical           : " + value("new_critical_violations"),
-  "  Major              : " + value("new_major_violations"),
-  "  Minor              : " + value("new_minor_violations"),
-  "  Info               : " + value("new_info_violations"), 
+  "Violations          : " + value("new_violations"),
+  "  Blocker           : " + value("new_blocker_violations"),
+  "  Critical          : " + value("new_critical_violations"),
+  "  Major             : " + value("new_major_violations"),
+  "  Minor             : " + value("new_minor_violations"),
+  "  Info              : " + value("new_info_violations"), 
   "",
-  "  Bugs               : " + value("new_bugs"),
-  "  Code Smells        : " + value("new_code_smells"),
-  "  Duplicated Lines   : " + value("new_duplicated_lines"),
+  "  Bugs              : " + value("new_bugs"),
+  "  Code Smells       : " + value("new_code_smells"),
+  "  Duplicated Lines  : " + value("new_duplicated_lines"),
   "",
-  "Coverage             : " + value("new_coverage") + "%",
-  " Lines to cover      : " + value("new_lines_to_cover"),
-  " Uncovered lines     : " + value("new_uncovered_lines"),
-  " Branch coverage     : " + value("new_branch_coverage"),
+  "Coverage            : " + value("new_coverage") + "%",
+  " Lines to cover     : " + value("new_lines_to_cover"),
+  " Uncovered lines    : " + value("new_uncovered_lines"),
+  " Branch coverage    : " + value("new_branch_coverage"),
+  "",  
+  "Security            : " + rating("new_security_rating"),
+  " Vulnerabilities    : " + value("new_vulnerabilities"),
+  " Remediation Effort : " + value("new_security_remediation_effort") + "mn",
   "",
-  "Complexity           : " + value("new_complexity"),
-  "Cognitive complexity : " + value("new_cognitive_complexity"),
-  "",
-  "Security             : " + rating("new_security_rating"),
-  " Vulnerabilities     : " + value("new_vulnerabilities"),
-  " Remediation Effort  : " + value("new_security_remediation_effort") + "mn",
-  "",
-  "Security Hotspots    : " + rating("new_security_review_rating"),
+  "Security Hotspots   : " + rating("new_security_review_rating"),
   "" 
 '
 
@@ -114,33 +113,33 @@ echo "$METRICS_RESPONSE" | jq -r '
     end;
 
   "",
-  "Reliability         : " + rating("reliability_rating"),
-  "Maintainability     : " + rating("sqale_rating"),
+  "Reliability          : " + rating("reliability_rating"),
+  "Maintainability      : " + rating("sqale_rating"),
   "",
-  "Violations          : " + value("violations"),
-  "  Blocker           : " + value("blocker_violations"),
-  "  Critical          : " + value("critical_violations"),
-  "  Major             : " + value("major_violations"),
-  "  Minor             : " + value("minor_violations"),
-  "  Info              : " + value("info_violations"), 
+  "Violations           : " + value("violations"),
+  "  Blocker            : " + value("blocker_violations"),
+  "  Critical           : " + value("critical_violations"),
+  "  Major              : " + value("major_violations"),
+  "  Minor              : " + value("minor_violations"),
+  "  Info               : " + value("info_violations"), 
   "",
-  "  Bugs              : " + value("bugs"),
-  "  Code Smells       : " + value("code_smells"),
-  "  Duplicated Lines  : " + value("duplicated_lines"),
+  "  Bugs               : " + value("bugs"),
+  "  Code Smells        : " + value("code_smells"),
+  "  Duplicated Lines   : " + value("duplicated_lines"),
   "",
-  "Coverage            : " + value("coverage") + "%",
-  " Lines to cover     : " + value("lines_to_cover"),
-  " Uncovered lines    : " + value("uncovered_lines"),
-  " Branch coverage    : " + value("branch_coverage"),
+  "Coverage             : " + value("coverage") + "%",
+  " Lines to cover      : " + value("lines_to_cover"),
+  " Uncovered lines     : " + value("uncovered_lines"),
+  " Branch coverage     : " + value("branch_coverage"),
   "",
-  "Complexity           : " + value("new_complexity"),
-  "Cognitive complexity : " + value("new_cognitive_complexity"),
+  "Complexity           : " + value("complexity"),
+  "Cognitive complexity : " + value("cognitive_complexity"),
   "",
-  "Security            : " + rating("security_rating"),
-  " Vulnerabilities    : " + value("vulnerabilities"),
-  " Remediation Effort : " + value("security_remediation_effort") + "mn",
+  "Security             : " + rating("security_rating"),
+  " Vulnerabilities     : " + value("vulnerabilities"),
+  " Remediation Effort  : " + value("security_remediation_effort") + "mn",
   "",
-  "Security Hotspots   : " + rating("security_review_rating"),
+  "Security Hotspots    : " + rating("security_review_rating"),
   "" 
 '
 
