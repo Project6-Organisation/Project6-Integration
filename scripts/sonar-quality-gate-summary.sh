@@ -18,7 +18,10 @@ RESPONSE=$(curl -s -u "$SONAR_TOKEN:" \
 STATUS=$(echo "$RESPONSE" | jq -r '.projectStatus.status')
 
 MEASURES_RESPONSE=$(curl -s -u "$SONAR_TOKEN:" \
-  "$SONAR_HOST_URL/api/measures/component?component=$PROJECT_KEY&branch=$BRANCH&metricKeys=coverage,duplicated_lines_density,reliability_rating,security_rating,sqale_rating,security_hotspots_reviewed")
+  "$SONAR_HOST_URL/api/measures/component?component=$PROJECT_KEY&branch=$BRANCH&metricKeys=coverage,duplicated_lines_density,reliability_rating,security_rating,sqale_rating,security_hotspots_reviewed,bugs,vulnerabilities,code_smells")
+
+ISSUES_RESPONSE=$(curl -s -u "$SONAR_TOKEN:" \
+  "$SONAR_HOST_URL/api/issues/search?componentKeys=$PROJECT_KEY&branch=$BRANCH&resolved=false&ps=1")
 
 echo ""
 echo "========================================"
@@ -68,6 +71,21 @@ echo "$RESPONSE" | jq -r '
     else
       empty
     end
+'
+
+echo ""
+echo "----------------------------------------"
+echo "ISSUES"
+echo "----------------------------------------"
+
+echo "$ISSUES_RESPONSE" | jq -r '
+  def count($type):
+    ([.facets[]? | select(.property == "types") | .values[]? | select(.val == $type) | .count][0] // 0);
+
+  "Bugs                           " + (count("BUG") | tostring),
+  "Vulnerabilities                " + (count("VULNERABILITY") | tostring),
+  "Code Smells                    " + (count("CODE_SMELL") | tostring),
+  "Security Hotspots              " + (count("SECURITY_HOTSPOT") | tostring)
 '
 
 echo ""
