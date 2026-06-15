@@ -71,4 +71,5 @@ jobs:
         run: |
           ./scripts/sonar-quality-gate-summary.sh \
             "Project6-Organisation_Project6-Application" \
-            "${GITHUB_REF_NAME}"
+            "${GITHUB_REF_NAME}" \
+            "FrontEnd"

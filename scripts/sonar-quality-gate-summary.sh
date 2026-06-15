@@ -4,6 +4,7 @@ set -euo pipefail
 
 PROJECT_KEY="${1:?PROJECT_KEY is required}"
 BRANCH="${2:?BRANCH is required}"
+APPLICATION_NAME="${3:?APPLICATION_NAME is required}"
 SONAR_HOST_URL="${SONAR_HOST_URL:-https://sonarcloud.io}"
 
 if [ -z "${SONAR_TOKEN:-}" ]; then
@@ -22,6 +23,7 @@ MEASURES_RESPONSE=$(curl -s -u "$SONAR_TOKEN:" \
 echo ""
 echo "========================================"
 echo "SONARQUBE QUALITY GATE"
+echo "Application: ${APPLICATION_NAME}"
 echo "========================================"
 
 if [ "$STATUS" = "OK" ]; then

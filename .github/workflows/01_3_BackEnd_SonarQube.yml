@@ -36,7 +36,7 @@ jobs:
       - name: Download JaCoCo report
         uses: actions/download-artifact@v4
         with:
-          name: jacoco-report
+          name: backend-coverage-report
           path: application/back/build/reports/jacoco/test
       
       - name: Fix permissions for SonarQube Quality Gate summary script
@@ -71,4 +71,5 @@ jobs:
         run: |
           ./scripts/sonar-quality-gate-summary.sh \
             "Project6-Organisation_Project6-Application" \
-            "${GITHUB_REF_NAME}"
+            "${GITHUB_REF_NAME}" \
+            "BackEnd"
