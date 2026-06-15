@@ -1,10 +1,7 @@
 name: BackEnd_Build
 
 on:
-  workflow_call:
-    secrets:
-        SONAR_TOKEN:
-          required: true
+  workflow_call:    
 
 jobs:
   BackEnd_Build:
@@ -34,9 +31,7 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
       
-      - name: Build BackEnd application
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Build BackEnd application        
         run: |
           echo "Building BackEnd application"
           ./gradlew clean build -x test

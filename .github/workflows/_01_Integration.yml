@@ -3,7 +3,9 @@ name: Integration
 on:
   workflow_call:
     secrets:
-        SONAR_TOKEN:
+        SONAR_TOKEN_BACKEND:
+          required: false
+        SONAR_TOKEN_FRONTEND:
           required: false
     inputs:
       origin:
@@ -37,10 +39,12 @@ jobs:
 
       - name: Check SonarQube token
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN_BACKEND: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          SONAR_TOKEN_FRONTEND: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         run: |
-          [ -n "$SONAR_TOKEN" ] && echo "SONAR_TOKEN OK" || echo "SONAR_TOKEN IS MISSING"
-    
+          [ -n "$SONAR_TOKEN_BACKEND" ] && echo "SONAR_TOKEN_BACKEND OK" || echo "SONAR_TOKEN_BACKEND IS MISSING"
+          [ -n "$SONAR_TOKEN_FRONTEND" ] && echo "SONAR_TOKEN_FRONTEND OK" || echo "SONAR_TOKEN_FRONTEND IS MISSING"
+
   BackEnd_Build:
     uses: ./.github/workflows/01_1_BackEnd_Build.yml
     secrets: inherit

@@ -3,7 +3,7 @@ name: FrontEnd_SonarQube
 on:
   workflow_call:
     secrets:
-        SONAR_TOKEN:
+        SONAR_TOKEN_FRONTEND:
           required: true
 
 jobs:
@@ -59,7 +59,7 @@ jobs:
       - name: Analyze FrontEnd application with SonarQube
         uses: SonarSource/sonarqube-scan-action@v6
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
           
         with:
           projectBaseDir: application/front
@@ -67,7 +67,7 @@ jobs:
       - name: Display SonarQube Quality Gate summary
         working-directory: integration
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         run: |
           ./scripts/sonar-quality-gate-summary.sh \
             "Project6-Organisation_Project6-Application" \
