@@ -51,6 +51,8 @@ jobs:
         working-directory: application/front
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test
-          args: --severity-threshold=medium --file=./package.json --org=${{ secrets.SNYK_ORG_ID }}
+        run: |
+          snyk test \
+            --severity-threshold=medium \
+            --file=package.json \
+            --org=${{ secrets.SNYK_ORG_ID }}
