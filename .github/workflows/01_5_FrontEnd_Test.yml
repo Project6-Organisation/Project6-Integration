@@ -1,4 +1,4 @@
-name: Integration_FrontEnd_Test
+name: FrontEnd_Test
 
 on:
   workflow_call:
@@ -29,4 +29,11 @@ jobs:
         run: |
           echo "Running npm tests"
           npm ci
-          npm test -- --watch=false --browsers=ChromeHeadless
+          npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+
+      - name: Upload frontend coverage        
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: front-coverage-report
+          path: front/coverage

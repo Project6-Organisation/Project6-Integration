@@ -1,4 +1,4 @@
-name: Integration_BackEnd_Test
+name: BackEnd_Test
 
 on:
   workflow_call:
@@ -34,7 +34,8 @@ jobs:
           ./gradlew clean test jacocoTestReport
 
       - name: Upload JaCoCo report
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: jacoco-report
+          name: backend-coverage-report
           path: back/build/reports/jacoco/test/jacocoTestReport.xml

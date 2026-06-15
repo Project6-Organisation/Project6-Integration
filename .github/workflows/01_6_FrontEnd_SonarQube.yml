@@ -1,4 +1,4 @@
-name: BackEnd_SonarQube
+name: FrontEnd_SonarQube
 
 on:
   workflow_call:
@@ -7,9 +7,9 @@ on:
           required: true
 
 jobs:
-  BackEnd_Build:
+  FrontEnd_SonarQube:
     
-    name: Analyse BackEnd application with SonarQube
+    name: Analyse FrontEnd application with SonarQube
     
     runs-on: ubuntu-latest
         
@@ -27,17 +27,17 @@ jobs:
           repository: Project6-Organisation/Project6-Integration
           path: integration
 
-      - name: Download backend build artifacts
+      - name: Download frontend build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: backend-build
-          path: application/back/build
+          name: frontend-build
+          path: application/front/dist
 
-      - name: Download JaCoCo report
+      - name: Download frontend coverage report
         uses: actions/download-artifact@v4
         with:
-          name: jacoco-report
-          path: application/back/build/reports/jacoco/test
+          name: front-coverage-report
+          path: application/front/coverage
       
       - name: Fix permissions for SonarQube Quality Gate summary script
         working-directory: integration
@@ -53,16 +53,16 @@ jobs:
       
       - name: Copy Sonar properties
         run: |
-          cp integration/sonar/sonar-backend.properties \
-            application/back/sonar-project.properties
+          cp integration/sonar/sonar-frontend.properties \
+            application/front/sonar-project.properties
 
-      - name: Analyze BackEnd application with SonarQube
+      - name: Analyze FrontEnd application with SonarQube
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           
         with:
-          projectBaseDir: application/back
+          projectBaseDir: application/front
 
       - name: Display SonarQube Quality Gate summary
         working-directory: integration

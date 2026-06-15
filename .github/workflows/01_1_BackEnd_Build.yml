@@ -1,4 +1,4 @@
-name: Integration_BackEnd_Build
+name: BackEnd_Build
 
 on:
   workflow_call:
