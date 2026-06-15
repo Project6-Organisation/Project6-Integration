@@ -44,11 +44,13 @@ jobs:
         working-directory: application/front
         run: npm ci
       
-      - name: Scan FrontEnd dependencies
+      - name: Setup Snyk CLI
         uses: snyk/actions/setup@master
+  
+      - name: Scan FrontEnd dependencies
         working-directory: application/front
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --severity-threshold=medium --file=./package.json --org=&{{ secrets.SNYK_ORG_ID }}
+          args: --severity-threshold=medium --file=./package.json --org=${{ secrets.SNYK_ORG_ID }}
