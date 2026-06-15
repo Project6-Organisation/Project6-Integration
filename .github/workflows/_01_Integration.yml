@@ -86,7 +86,7 @@ jobs:
   Snyk_Scan:
     needs:
       - BackEnd_Build
-      - FrontEnd_Test
+      - FrontEnd_Build
     uses: ./.github/workflows/01_7_Snyk.yml
     secrets: inherit
 
