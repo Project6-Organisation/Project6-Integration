@@ -9,6 +9,8 @@ on:
           required: false
         SNYK_TOKEN:
           required: false
+        SNYK_ORG_ID:
+          required: false
     inputs:
       origin:
         required: false

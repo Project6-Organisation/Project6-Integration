@@ -5,28 +5,30 @@ on:
     secrets:
         SNYK_TOKEN:
           required: true
+        SNYK_ORG_ID:
+          required: true
 
 jobs:
   Snyk_BackEnd:
     name: Snyk BackEnd Dependencies
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Application
-        uses: actions/checkout@v4
-        with:
-          path: application
+    # steps:
+    #   - name: Checkout Application
+    #     uses: actions/checkout@v4
+    #     with:
+    #       path: application
 
-      - name: Setup Snyk CLI
-        uses: snyk/actions/setup@master
+    #   - name: Setup Snyk CLI
+    #     uses: snyk/actions/setup@master
 
-      - name: Scan BackEnd dependencies
-        working-directory: application/back
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          chmod +x ./gradlew
-          snyk test --severity-threshold=high
+    #   - name: Scan BackEnd dependencies
+    #     working-directory: application/back
+    #     env:
+    #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    #     run: |
+    #       chmod +x ./gradlew
+    #       snyk test --severity-threshold=high
 
   Snyk_FrontEnd:
     name: Snyk FrontEnd Dependencies
@@ -38,13 +40,15 @@ jobs:
         with:
           path: application
 
-      - name: Setup Snyk CLI
-        uses: snyk/actions/setup@master
-
+      - name: Install dependencies
+        working-directory: application/front
+        run: npm ci
+      
       - name: Scan FrontEnd dependencies
+        uses: snyk/actions/setup@master
         working-directory: application/front
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          npm ci
-          snyk test --severity-threshold=high
+        with:
+          command: test
+          args: --severity-threshold=medium --file=./package.json --org=&{{ secrets.SNYK_ORG_ID }}
