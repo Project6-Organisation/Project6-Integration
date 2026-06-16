@@ -36,11 +36,7 @@ jobs:
   Semantic_Release:
 
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./front
-
+    
     outputs:
       is_release: ${{ steps.compute-image-tag.outputs.is_release }}
       release_version: ${{ steps.semantic-release.outputs.new_release_version }}
@@ -56,6 +52,7 @@ jobs:
       - name: Semantic Release
         id: semantic-release
         uses: cycjimmy/semantic-release-action@v6
+        working_directory: ./front
         with:
           extra_plugins: |
             @semantic-release/changelog
