@@ -20,7 +20,7 @@ permissions:
   contents: write
   packages: write
   issues: write
-  pull-requests: write
+  pull-requests: read
   
 jobs:
   Check-variables:
