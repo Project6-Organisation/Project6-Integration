@@ -1,0 +1,160 @@
+name: Release_And_Docker
+
+on:
+  workflow_call:    
+    
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: read
+  
+jobs:
+  
+  Check-variables:
+    runs-on: ubuntu-latest
+    steps:      
+            
+      - name: Show trigger type
+        run: |
+          echo "Triggered by   : ${{ github.event_name }}"
+          echo "github.base_ref: ${{ github.base_ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+
+      - name: Show caller & called workflow branch
+        run: |
+          if [ "${{ inputs.origin }}" == "manual-trigger" ]; then
+            echo "Caller branch: ${{ github.ref_name }}"
+            echo "Called pipeline branch: develop"
+          else
+            echo "Caller branch: ${{ github.ref_name }}"
+            echo "Called pipeline branch: main"
+          fi
+    
+  Semantic_Release:
+
+    if: |
+      github.event_name == 'pull_request' &&
+      github.base_ref == 'main' &&
+      github.head_ref == 'develop'
+
+    runs-on: ubuntu-latest    
+
+    outputs:
+      is_release: ${{ steps.compute-image-tag.outputs.is_release }}
+      release_version: ${{ steps.semantic-release.outputs.new_release_version }}
+      release_major_version: ${{ steps.semantic-release.outputs.new_release_major_version }}
+      image_tag: ${{ steps.compute-image-tag.outputs.image_tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Semantic Release
+        id: semantic-release
+        uses: cycjimmy/semantic-release-action@v6
+        with:
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+            @semantic-release/github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           
+      - name: Compute image tag
+        id: compute-image-tag
+        run: |
+          branch="${GITHUB_REF_NAME//\//-}"
+          sha="${GITHUB_SHA::7}"
+
+          if [ "${{ steps.semantic-release.outputs.new_release_published }}" = "true" ]; then
+            image_tag="v${{ steps.semantic-release.outputs.new_release_version }}"
+            is_release="true"
+          else
+            image_tag="${branch}-${sha}"
+            is_release="false"
+          fi
+
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
+          echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
+
+      - name: Display computed outputs
+        run: |
+          echo "image_tag = ${{ steps.compute-image-tag.outputs.image_tag }}"
+          echo "is_release = ${{ steps.compute-image-tag.outputs.is_release }}"
+
+      # - name: Update package.json version
+      #   if : steps.semantic-release.outputs.new_release_published == 'true'
+      #   uses: restackio/update-json-file-action@2.1
+      #   with:
+      #     file: front/package.json
+      #     fields: "{\"version\": \"${{ steps.semantic-release.outputs.new_release_version }}\"}"
+
+      # - name: Commit files
+      #   if: steps.semantic-release.outputs.new_release_published == 'true'
+      #   run: |
+      #     git config user.name "github-actions"
+      #     git config user.email "github-actions@github.com"
+
+      #     git add front/package.json
+      #     git add CHANGELOG.md
+  
+      #     git commit -m "chore(release): ${{ steps.semantic-release.outputs.new_release_version }} [skip ci]"
+
+      #     git push
+
+      # - name: Update build.gradle version
+      #   if : steps.semantic-release.outputs.new_release_published == 'true'
+      #   run: |
+      #     sed -i "s/^version = .*/version = '${{ steps.semantic-release.outputs.new_release_version }}'/" build.gradle
+            
+      # - name: Commit files
+      #   if: steps.semantic-release.outputs.new_release_published == 'true'
+      #   run: |
+      #     git config user.name "github-actions"
+      #     git config user.email "github-actions@github.com"
+
+      #     git add build.gradle
+      #     git add CHANGELOG.md
+  
+      #     git commit -m "chore(release): ${{ steps.semantic-release.outputs.new_release_version }} [skip ci]"
+
+      #     git push
+
+  # BackEnd_Docker_Build:
+    
+  #   if: |
+  #     github.event_name == 'pull_request' &&
+  #     github.base_ref == 'main' &&
+  #     github.head_ref == 'develop'
+    
+  #   needs:
+  #     - BackEnd_Test
+  #     - Semantic-Release
+    
+  #   uses: ./.github/workflows/02_1_BackEnd_Docker_Build.yml
+    
+  #   with:
+  #     image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
+  #     is_release: ${{ needs.Semantic-Release.outputs.is_release }}
+  #   secrets: inherit
+    
+  # FrontEnd_Docker_Build:
+    
+  #   if: |
+  #     github.event_name == 'pull_request' &&
+  #     github.base_ref == 'main' &&
+  #     github.head_ref == 'develop'
+
+  #   needs:
+  #     - FrontEnd_Test
+  #     - Semantic-Release
+    
+  #   uses: ./.github/workflows/02_2_FrontEnd_Docker_Build.yml
+    
+  #   with:
+  #     image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
+  #     is_release: ${{ needs.Semantic-Release.outputs.is_release }}
+  #   secrets: inherit
