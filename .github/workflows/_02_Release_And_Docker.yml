@@ -37,12 +37,11 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    # outputs:
-    #   is_release: ${{ steps.compute-image-tag.outputs.is_release }}
-    #   release_version: ${{ steps.semantic-release.outputs.new_release_version }}
-    #   release_major_version: ${{ steps.semantic-release.outputs.new_release_major_version }}
-    #   image_tag: ${{ steps.compute-image-tag.outputs.image_tag }}
-
+    outputs:
+      is_release: ${{ steps.compute-image-tag.outputs.is_release }}
+      release_version: ${{ steps.semantic-release.outputs.new_release_version }}
+      image_tag: ${{ steps.compute-image-tag.outputs.image_tag }}
+    
     steps:
 
       - name: Checkout repository Application
@@ -57,14 +56,6 @@ jobs:
           repository: Project6-Organisation/Project6-Integration
           path: integration
 
-      # - name: Debug
-      #   run: |
-      #     echo "hello"
-      #     pwd
-      #     ls -la
-      #     ls -la front
-      #     cat front/package.json | head -5
-
       - name: Copy semantic-release config
         run: |
           cp integration/release.config.cjs \
@@ -74,6 +65,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: application/front/package-lock.json
 
       - name: Install Semantic Release
         working-directory: application/front
@@ -90,42 +83,38 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx semantic-release --dry-run
+          BEFORE_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 
-      # - name: Semantic Release
-      #   id: semantic-release
-      #   uses: cycjimmy/semantic-release-action@v6        
-      #   with:
-      #     extra_plugins: |
-      #       @semantic-release/changelog
-      #       @semantic-release/git
-      #       @semantic-release/github
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npx semantic-release
+
+          AFTER_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ "$BEFORE_TAG" != "$AFTER_TAG" ]; then
+            echo "new_release_published=true" >> "$GITHUB_OUTPUT"
+            echo "new_release_version=${AFTER_TAG#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "new_release_published=false" >> "$GITHUB_OUTPUT"
+            echo "new_release_version=" >> "$GITHUB_OUTPUT"
+          fi
            
-      # - name: Compute image tag
-      #   id: compute-image-tag
-      #   run: |
-      #     branch="${GITHUB_REF_NAME//\//-}"
-      #     sha="${GITHUB_SHA::7}"
+      - name: Compute image tag
+        id: compute-image-tag
+        run: |
+          if [ "${{ steps.semantic-release.outputs.new_release_published }}" = "true" ]; then
+            image_tag="v${{ steps.semantic-release.outputs.new_release_version }}"
+            is_release="true"
+          else
+            image_tag="${GITHUB_REF_NAME}-${GITHUB_SHA::7}"
+            is_release="false"
+          fi
 
-      #     if [ "${{ steps.semantic-release.outputs.new_release_published }}" = "true" ]; then
-      #       image_tag="v${{ steps.semantic-release.outputs.new_release_version }}"
-      #       is_release="true"
-      #     else
-      #       image_tag="${branch}-${sha}"
-      #       is_release="false"
-
-      
-      #     fi
-
-      #     echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
-      #     echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
-
-      # - name: Display computed outputs
-      #   run: |
-      #     echo "image_tag = ${{ steps.compute-image-tag.outputs.image_tag }}"
-      #     echo "is_release = ${{ steps.compute-image-tag.outputs.is_release }}"
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
+          echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
+            
+      - name: Display computed outputs
+        run: |
+          echo "image_tag = ${{ steps.compute-image-tag.outputs.image_tag }}"
+          echo "is_release = ${{ steps.compute-image-tag.outputs.is_release }}"
 
       # - name: Update package.json version
       #   if : steps.semantic-release.outputs.new_release_published == 'true'
