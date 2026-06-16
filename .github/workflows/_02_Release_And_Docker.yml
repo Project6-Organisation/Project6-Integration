@@ -44,10 +44,18 @@ jobs:
     #   image_tag: ${{ steps.compute-image-tag.outputs.image_tag }}
 
     steps:
-      - name: Checkout
+
+      - name: Checkout repository Application
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          path: application
+
+      - name: Checkout repository Integration
+        uses: actions/checkout@v6
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
 
       # - name: Debug
       #   run: |
@@ -56,6 +64,11 @@ jobs:
       #     ls -la
       #     ls -la front
       #     cat front/package.json | head -5
+
+      - name: Copy semantic-release config
+        run: |
+          cp integration/release.config.cjs \
+            application/front/release.config.cjs
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -77,7 +90,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx semantic-release
+          npx semantic-release --dry-run
 
       # - name: Semantic Release
       #   id: semantic-release
