@@ -37,11 +37,11 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    outputs:
-      is_release: ${{ steps.compute-image-tag.outputs.is_release }}
-      release_version: ${{ steps.semantic-release.outputs.new_release_version }}
-      release_major_version: ${{ steps.semantic-release.outputs.new_release_major_version }}
-      image_tag: ${{ steps.compute-image-tag.outputs.image_tag }}
+    # outputs:
+    #   is_release: ${{ steps.compute-image-tag.outputs.is_release }}
+    #   release_version: ${{ steps.semantic-release.outputs.new_release_version }}
+    #   release_major_version: ${{ steps.semantic-release.outputs.new_release_major_version }}
+    #   image_tag: ${{ steps.compute-image-tag.outputs.image_tag }}
 
     steps:
       - name: Checkout
@@ -51,6 +51,7 @@ jobs:
 
       - name: Debug
         run: |
+          echo "hello"
           pwd
           ls -la
           ls -la front
