@@ -90,9 +90,11 @@ jobs:
           AFTER_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 
           if [ "$BEFORE_TAG" != "$AFTER_TAG" ]; then
+            echo "New release published"
             echo "new_release_published=true" >> "$GITHUB_OUTPUT"
             echo "new_release_version=${AFTER_TAG#v}" >> "$GITHUB_OUTPUT"
           else
+            echo "No new release published"
             echo "new_release_published=false" >> "$GITHUB_OUTPUT"
             echo "new_release_version=" >> "$GITHUB_OUTPUT"
           fi
@@ -108,6 +110,9 @@ jobs:
             is_release="false"
           fi
 
+          echo "Computed image tag: $image_tag"
+          echo "Is release: $is_release"
+          
           echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
           echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
             
