@@ -26,15 +26,15 @@ jobs:
   Check-variables:
     runs-on: ubuntu-latest
     steps:      
-            
-      - name: Show trigger type
+      
+      - name: Show caller & called workflow branch
         run: |
-          echo "Triggered by   : ${{ github.event_name }}"
+          echo "Triggered by : ${{ github.event_name }}"
+          echo "Action       : ${{ github.event.action }}"
+
           echo "github.base_ref: ${{ github.base_ref }}"
           echo "github.head_ref: ${{ github.head_ref }}"
 
-      - name: Show caller & called workflow branch
-        run: |
           if [ "${{ inputs.origin }}" == "manual-trigger" ]; then
             echo "Caller branch: ${{ github.ref_name }}"
             echo "Called pipeline branch: develop"

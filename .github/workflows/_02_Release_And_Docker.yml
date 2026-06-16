@@ -33,11 +33,6 @@ jobs:
     
   Semantic_Release:
 
-    if: |
-      github.event_name == 'pull_request' &&
-      github.base_ref == 'main' &&
-      github.head_ref == 'develop'
-
     runs-on: ubuntu-latest    
 
     outputs:
