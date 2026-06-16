@@ -57,17 +57,17 @@ jobs:
           ls -la front
           cat front/package.json | head -5
 
-      # - name: Semantic Release
-      #   id: semantic-release
-      #   uses: cycjimmy/semantic-release-action@v6
-      #   working_directory: front
-      #   with:
-      #     extra_plugins: |
-      #       @semantic-release/changelog
-      #       @semantic-release/git
-      #       @semantic-release/github
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Semantic Release
+        id: semantic-release
+        uses: cycjimmy/semantic-release-action@v6
+        working_directory: front
+        with:
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+            @semantic-release/github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            
       # - name: Compute image tag
       #   id: compute-image-tag
