@@ -76,7 +76,7 @@ jobs:
           node-version: 22
 
       - name: Install Semantic Release
-        working-directory: front
+        working-directory: application/front
         run: |
           npm ci
           npm install --save-dev \
@@ -86,7 +86,7 @@ jobs:
             @semantic-release/github
 
       - name: Semantic Release
-        working-directory: front
+        working-directory: application/front
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
