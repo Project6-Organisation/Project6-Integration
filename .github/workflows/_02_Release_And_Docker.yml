@@ -74,9 +74,9 @@ jobs:
           npm ci
           npm install --save-dev \
             semantic-release \
-            @semantic-release/changelog \
-            @semantic-release/git \
             @semantic-release/github
+            # @semantic-release/changelog \
+            # @semantic-release/git \
 
       - name: Semantic Release
         working-directory: application/front
