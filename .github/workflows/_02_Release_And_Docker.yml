@@ -12,7 +12,9 @@ permissions:
 jobs:
   
   Check-variables:
+    
     runs-on: ubuntu-latest
+    
     steps:      
             
       - name: Show caller & called workflow branch
@@ -33,7 +35,11 @@ jobs:
     
   Semantic_Release:
 
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./front
 
     outputs:
       is_release: ${{ steps.compute-image-tag.outputs.is_release }}
@@ -51,7 +57,6 @@ jobs:
         id: semantic-release
         uses: cycjimmy/semantic-release-action@v6
         with:
-          working_directory: front
           extra_plugins: |
             @semantic-release/changelog
             @semantic-release/git
