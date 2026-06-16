@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout Application
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: application
 
@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Checkout Application
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: application
 
