@@ -29,11 +29,10 @@ jobs:
             
       - name: Show trigger type
         run: |
-          echo "Triggered by: ${{ github.event_name }}"
-          echo "Github event: ${{ github.event_name }}"
-          echo "Github base_ref: ${{ github.base_ref }}"
-          echo "Github head_ref: ${{ github.head_ref }}"
-      
+          echo "Triggered by   : ${{ github.event_name }}"
+          echo "github.base_ref: ${{ github.base_ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+
       - name: Show caller & called workflow branch
         run: |
           if [ "${{ inputs.origin }}" == "manual-trigger" ]; then
