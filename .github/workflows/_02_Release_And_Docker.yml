@@ -32,7 +32,7 @@ jobs:
             echo "Caller branch: ${{ github.ref_name }}"
             echo "Called pipeline branch: main"
           fi
-    
+  
   Semantic_Release:
 
     runs-on: ubuntu-latest
@@ -48,6 +48,13 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Debug
+        run: |
+          pwd
+          ls -la
+          ls -la front
+          cat front/package.json | head -5
 
       - name: Semantic Release
         id: semantic-release
