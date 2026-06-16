@@ -34,6 +34,16 @@ jobs:
             --file=build.gradle \
             --org=${{ secrets.SNYK_ORG_ID }} || true
 
+      - name: Monitor BackEnd
+        if: github.ref_name == 'develop'
+        working-directory: application/back
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          snyk monitor \
+            --file=build.gradle \
+            --org=${{ secrets.SNYK_ORG_ID }}
+
   Snyk_FrontEnd:
     name: Snyk FrontEnd Dependencies
     runs-on: ubuntu-latest
@@ -60,3 +70,13 @@ jobs:
             --severity-threshold=high \
             --file=package.json \
             --org=${{ secrets.SNYK_ORG_ID }} || true
+
+      - name: Monitor FrontEnd
+        if: github.ref_name == 'develop'
+        working-directory: application/front
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          snyk monitor \
+            --file=package.json \
+            --org=${{ secrets.SNYK_ORG_ID }}
