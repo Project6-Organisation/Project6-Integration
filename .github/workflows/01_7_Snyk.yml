@@ -9,26 +9,30 @@ on:
           required: true
 
 jobs:
-  # Snyk_BackEnd:
-  #   name: Snyk BackEnd Dependencies
-  #   runs-on: ubuntu-latest
+  
+  Snyk_BackEnd:
+    name: Snyk BackEnd Dependencies
+    runs-on: ubuntu-latest
 
-    # steps:
-    #   - name: Checkout Application
-    #     uses: actions/checkout@v4
-    #     with:
-    #       path: application
+    steps:
+      - name: Checkout Application
+        uses: actions/checkout@v4
+        with:
+          path: application
 
-    #   - name: Setup Snyk CLI
-    #     uses: snyk/actions/setup@master
+      - name: Setup Snyk CLI
+        uses: snyk/actions/setup@master
 
-    #   - name: Scan BackEnd dependencies
-    #     working-directory: application/back
-    #     env:
-    #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    #     run: |
-    #       chmod +x ./gradlew
-    #       snyk test --severity-threshold=high
+      - name: Scan BackEnd dependencies
+        working-directory: application/back
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          chmod +x ./gradlew
+          snyk test \
+            --severity-threshold=high \
+            --file=build.gradle \
+            --org=${{ secrets.SNYK_ORG_ID }} || true
 
   Snyk_FrontEnd:
     name: Snyk FrontEnd Dependencies
@@ -53,6 +57,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           snyk test \
-            --severity-threshold=high || true \
+            --severity-threshold=high \
             --file=package.json \
-            --org=${{ secrets.SNYK_ORG_ID }}
+            --org=${{ secrets.SNYK_ORG_ID }} || true
