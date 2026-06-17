@@ -16,6 +16,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+
+      - name: Debug Node
+        run: |
+          echo "PATH=$PATH"
+          which node
+          which npm
+          node -v
+          npm -v
       
       - name: Cache npm
         uses: actions/cache@v5
