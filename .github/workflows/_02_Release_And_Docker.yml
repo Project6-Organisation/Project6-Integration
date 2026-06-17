@@ -79,6 +79,7 @@ jobs:
             # @semantic-release/git \
 
       - name: Semantic Release
+        id: semantic-release
         working-directory: application/front
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
