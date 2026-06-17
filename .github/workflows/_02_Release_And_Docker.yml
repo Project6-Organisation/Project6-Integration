@@ -160,38 +160,26 @@ jobs:
 
       #     git push
 
-  # BackEnd_Docker_Build:
+  BackEnd_Docker_Build:
     
-  #   if: |
-  #     github.event_name == 'pull_request' &&
-  #     github.base_ref == 'main' &&
-  #     github.head_ref == 'develop'
+    needs:
+      - Semantic-Release
     
-  #   needs:
-  #     - BackEnd_Test
-  #     - Semantic-Release
+    uses: ./.github/workflows/02_1_BackEnd_Docker_Build.yml
     
-  #   uses: ./.github/workflows/02_1_BackEnd_Docker_Build.yml
+    with:
+      image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
+      is_release: ${{ needs.Semantic-Release.outputs.is_release }}
+    secrets: inherit
     
-  #   with:
-  #     image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
-  #     is_release: ${{ needs.Semantic-Release.outputs.is_release }}
-  #   secrets: inherit
-    
-  # FrontEnd_Docker_Build:
-    
-  #   if: |
-  #     github.event_name == 'pull_request' &&
-  #     github.base_ref == 'main' &&
-  #     github.head_ref == 'develop'
+  FrontEnd_Docker_Build:
 
-  #   needs:
-  #     - FrontEnd_Test
-  #     - Semantic-Release
+    needs:
+      - Semantic-Release
     
-  #   uses: ./.github/workflows/02_2_FrontEnd_Docker_Build.yml
+    uses: ./.github/workflows/02_2_FrontEnd_Docker_Build.yml
     
-  #   with:
-  #     image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
-  #     is_release: ${{ needs.Semantic-Release.outputs.is_release }}
-  #   secrets: inherit
+    with:
+      image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
+      is_release: ${{ needs.Semantic-Release.outputs.is_release }}
+    secrets: inherit

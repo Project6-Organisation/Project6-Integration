@@ -1,13 +1,25 @@
-name: BackEnd_Build
+name: BackEnd_docker_Build
 
 on:
-  workflow_call:    
+  workflow_call:
+    inputs:
+      image_tag:
+        required: true
+        type: string
+      is_release:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: read
 
 jobs:
-  BackEnd_Build:
-    
-    name: Build BackEnd application
-    
+  BackEnd_docker_Build:
+
+    # runs-on: ubuntu-latest
     runs-on: [self-hosted, project6]
 
     defaults:
@@ -15,29 +27,33 @@ jobs:
         working-directory: ./back
     
     steps:
+      - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v6
-          
-      - name: Fix permissions for Gradle
+      - name: Compute image name
         run: |
-          chmod +x ./gradlew
-      
-      - name: Cache Gradle
-        uses: actions/cache@v5
-        if: success()
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-      
-      - name: Build BackEnd application        
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ inputs.image_tag }}" >> $GITHUB_ENV
+            
+      - name: Login to GitHub Container Registry
         run: |
-          echo "Building BackEnd application"
-          ./gradlew clean build -x test
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+            -u "${{ github.actor }}" \
+            --password-stdin
 
-      - name: Upload backend build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-build
-          path: back/build
+      - name: Build Docker image
+        run: |
+          docker build \
+            --target back \
+            -t "$IMAGE_NAME:$IMAGE_TAG" \
+            -t "$IMAGE_NAME:latest" \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push "$IMAGE_NAME:$IMAGE_TAG"
+          docker push "$IMAGE_NAME:latest"
+
+      - name: Show pushed image
+        run: |
+          echo "Pushed image: $IMAGE_NAME:$IMAGE_TAG"
+          echo "Pushed image: $IMAGE_NAME:latest"  
