@@ -29,13 +29,13 @@ jobs:
           path: integration
 
       - name: Download frontend build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: frontend-build
           path: application/front/dist
 
       - name: Download frontend coverage report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: front-coverage-report
           path: application/front/coverage

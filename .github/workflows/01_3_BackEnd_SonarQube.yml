@@ -29,13 +29,13 @@ jobs:
           path: integration
 
       - name: Download backend build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: backend-build
           path: application/back/build
 
       - name: Download JaCoCo report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: backend-coverage-report
           path: application/back/build/reports/jacoco/test
