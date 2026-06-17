@@ -11,7 +11,7 @@ jobs:
     
     name: Analyse FrontEnd application with SonarQube
     
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
         
     steps:
 

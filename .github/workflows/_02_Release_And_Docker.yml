@@ -13,7 +13,7 @@ jobs:
   
   Check-variables:
     
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:      
             
@@ -35,7 +35,7 @@ jobs:
   
   Semantic_Release:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     outputs:
       is_release: ${{ steps.compute-image-tag.outputs.is_release }}

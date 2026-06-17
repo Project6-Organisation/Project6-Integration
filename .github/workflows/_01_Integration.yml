@@ -24,7 +24,8 @@ permissions:
   
 jobs:
   Check-variables:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:      
       
       - name: Show caller & called workflow branch
@@ -96,7 +97,7 @@ jobs:
 
   CI_Status:
     name: CI Status
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     needs:
       - BackEnd_Build
