@@ -13,7 +13,8 @@ jobs:
   
   Check-variables:
     
-    runs-on: [self-hosted, project6]
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
     
     steps:      
             
@@ -38,7 +39,8 @@ jobs:
     needs:
       - Check-variables
 
-    runs-on: [self-hosted, project6]
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
     
     outputs:
       is_release: ${{ steps.compute-image-tag.outputs.is_release }}

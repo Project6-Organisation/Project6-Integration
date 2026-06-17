@@ -11,7 +11,8 @@ jobs:
     
     name: Analyse BackEnd application with SonarQube
     
-    runs-on: [self-hosted, project6]
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
         
     steps:
 

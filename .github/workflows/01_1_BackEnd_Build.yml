@@ -8,7 +8,8 @@ jobs:
     
     name: Build BackEnd application
     
-    runs-on: [self-hosted, project6]
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     defaults:
       run:
