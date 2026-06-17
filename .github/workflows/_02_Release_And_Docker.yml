@@ -119,12 +119,7 @@ jobs:
           
           echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
           echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
-            
-      - name: Display computed outputs
-        run: |
-          echo "image_tag = ${{ steps.compute-image-tag.outputs.image_tag }}"
-          echo "is_release = ${{ steps.compute-image-tag.outputs.is_release }}"
-
+      
       # - name: Update package.json version
       #   if : steps.semantic-release.outputs.new_release_published == 'true'
       #   uses: restackio/update-json-file-action@2.1

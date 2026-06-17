@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "inputs.image_tag: ${{ inputs.image_tag }}"
           echo "inputs.is_release: ${{ inputs.is_release }}"
-          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/frontend" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ inputs.image_tag }}" >> $GITHUB_ENV
       
       - name: Login to GitHub Container Registry
