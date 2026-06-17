@@ -8,7 +8,7 @@ jobs:
     
     name: Test BackEnd application
     
-    runs-on: self-hosted
+    runs-on: [self-hosted, project6]
 
     defaults:
       run:
