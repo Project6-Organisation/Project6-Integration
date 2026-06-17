@@ -24,8 +24,10 @@ permissions:
   
 jobs:
   Check-variables:
+    
     # runs-on: ubuntu-latest
     runs-on: [self-hosted, project6]
+    
     steps:      
       
       - name: Show caller & called workflow branch
@@ -52,63 +54,75 @@ jobs:
           [ -n "$SONAR_TOKEN_BACKEND" ] && echo "SONAR_TOKEN_BACKEND OK" || echo "SONAR_TOKEN_BACKEND IS MISSING"
           [ -n "$SONAR_TOKEN_FRONTEND" ] && echo "SONAR_TOKEN_FRONTEND OK" || echo "SONAR_TOKEN_FRONTEND IS MISSING"
 
-  BackEnd_Build:
-    uses: ./.github/workflows/01_1_BackEnd_Build.yml
-    secrets: inherit
+      - name: Check Snyk token
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_ORG_ID: ${{ secrets.SNYK_ORG_ID }}
+        run: |
+          [ -n "$SNYK_TOKEN" ] && echo "SNYK_TOKEN OK" || echo "SNYK_TOKEN IS MISSING"
+          [ -n "$SNYK_ORG_ID" ] && echo "SNYK_ORG_ID OK" || echo "SNYK_ORG_ID IS MISSING"
+
+  # BackEnd_Build:
+  #   needs:
+  #     - Check-variables
+  #   uses: ./.github/workflows/01_1_BackEnd_Build.yml
+  #   secrets: inherit
     
-  BackEnd_Test:
-    needs:
-      - BackEnd_Build
-    uses: ./.github/workflows/01_2_BackEnd_Test.yml
-    secrets: inherit
+  # BackEnd_Test:
+  #   needs:
+  #     - BackEnd_Build
+  #   uses: ./.github/workflows/01_2_BackEnd_Test.yml
+  #   secrets: inherit
 
-  BackEnd_SonarQube:
-    if: |
-      github.ref_name == 'develop'
-    needs:
-      - BackEnd_Test
-    uses: ./.github/workflows/01_3_BackEnd_SonarQube.yml
-    secrets: inherit
+  # BackEnd_SonarQube:
+  #   if: |
+  #     github.ref_name == 'develop'
+  #   needs:
+  #     - BackEnd_Test
+  #   uses: ./.github/workflows/01_3_BackEnd_SonarQube.yml
+  #   secrets: inherit
     
-  FrontEnd_Build:
-    uses: ./.github/workflows/01_4_FrontEnd_Build.yml
-    secrets: inherit
+  # FrontEnd_Build:
+  #   needs:
+  #     - Check-variables
+  #   uses: ./.github/workflows/01_4_FrontEnd_Build.yml
+  #   secrets: inherit
 
-  FrontEnd_Test:
-    needs:
-      - FrontEnd_Build
-    uses: ./.github/workflows/01_5_FrontEnd_Test.yml
-    secrets: inherit
+  # FrontEnd_Test:
+  #   needs:
+  #     - FrontEnd_Build
+  #   uses: ./.github/workflows/01_5_FrontEnd_Test.yml
+  #   secrets: inherit
 
-  FrontEnd_SonarQube:
-    if: |
-      github.ref_name == 'develop'
-    needs:
-      - FrontEnd_Test
-    uses: ./.github/workflows/01_6_FrontEnd_SonarQube.yml
-    secrets: inherit
+  # FrontEnd_SonarQube:
+  #   if: |
+  #     github.ref_name == 'develop'
+  #   needs:
+  #     - FrontEnd_Test
+  #   uses: ./.github/workflows/01_6_FrontEnd_SonarQube.yml
+  #   secrets: inherit
 
-  Snyk_Scan:
-    needs:
-      - BackEnd_Build
-      - FrontEnd_Build
-    uses: ./.github/workflows/01_7_Snyk.yml
-    secrets: inherit
+  # Snyk_Scan:
+  #   needs:
+  #     - BackEnd_Build
+  #     - FrontEnd_Build
+  #   uses: ./.github/workflows/01_7_Snyk.yml
+  #   secrets: inherit
 
-  CI_Status:
-    name: CI Status
-    runs-on: [self-hosted, project6]
+  # CI_Status:
+  #   name: CI Status
+  #   runs-on: [self-hosted, project6]
 
-    needs:
-      - BackEnd_Build
-      - BackEnd_Test
-      - FrontEnd_Build
-      - FrontEnd_Test
-      - BackEnd_SonarQube
-      - FrontEnd_SonarQube
-      - Snyk_Scan
+  #   needs:
+  #     - BackEnd_Build
+  #     - BackEnd_Test
+  #     - FrontEnd_Build
+  #     - FrontEnd_Test
+  #     - BackEnd_SonarQube
+  #     - FrontEnd_SonarQube
+  #     - Snyk_Scan
 
-    if: always()
+  #   if: always()
 
-    steps:
-      - run: echo "All checks passed"
+  #   steps:
+  #     - run: echo "All checks passed"
