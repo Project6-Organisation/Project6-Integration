@@ -163,7 +163,7 @@ jobs:
   BackEnd_Docker_Build:
     
     needs:
-      - Semantic-Release
+      - Semantic_Release
     
     uses: ./.github/workflows/02_1_BackEnd_Docker_Build.yml
     
@@ -175,7 +175,7 @@ jobs:
   FrontEnd_Docker_Build:
 
     needs:
-      - Semantic-Release
+      - Semantic_Release
     
     uses: ./.github/workflows/02_2_FrontEnd_Docker_Build.yml
     
