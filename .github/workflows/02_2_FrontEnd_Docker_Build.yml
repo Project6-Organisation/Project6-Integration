@@ -17,7 +17,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  FrontEnd_Build:
+  FrontEnd_Docker_Build:
     
     # runs-on: ubuntu-latest
     runs-on: [self-hosted, project6]
@@ -29,8 +29,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Compute image name
+      - name: Assign and display image name
         run: |
+          echo "inputs.image_tag: ${{ inputs.image_tag }}"
+          echo "inputs.is_release: ${{ inputs.is_release }}"
           echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ inputs.image_tag }}" >> $GITHUB_ENV
       

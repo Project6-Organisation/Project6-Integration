@@ -35,6 +35,9 @@ jobs:
   
   Semantic_Release:
 
+    needs:
+      - Check-variables
+
     runs-on: [self-hosted, project6]
     
     outputs:
@@ -168,8 +171,8 @@ jobs:
     uses: ./.github/workflows/02_1_BackEnd_Docker_Build.yml
     
     with:
-      image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
-      is_release: ${{ needs.Semantic-Release.outputs.is_release }}
+      image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}
+      is_release: ${{ needs.Semantic_Release.outputs.is_release }}
     secrets: inherit
     
   FrontEnd_Docker_Build:
@@ -180,6 +183,6 @@ jobs:
     uses: ./.github/workflows/02_2_FrontEnd_Docker_Build.yml
     
     with:
-      image_tag: ${{ needs.Semantic-Release.outputs.image_tag }}
-      is_release: ${{ needs.Semantic-Release.outputs.is_release }}
+      image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}
+      is_release: ${{ needs.Semantic_Release.outputs.is_release }}
     secrets: inherit
