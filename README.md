@@ -1,2 +1,5 @@
-# Project6-Integration
-Project6-Integration
+# Projet MicroCRM
+
+## Documentation complète
+
+👉 https://olivierpflieger.github.io/Project6/

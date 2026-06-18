@@ -1,0 +1,26 @@
+site_name: Projet6 MicroCRM
+site_url: https://github.com/olivierPflieger/Project6/
+theme:
+  name: material
+  features:
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Passer en mode sombre
+
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Passer en mode clair
+nav:
+  - Accueil: index.md
+  - Démarrage:
+      - Back-End: backend.md
+      - Front-End: frontend.md
+  - Tests:
+      - Back-End: testing-backend.md
+      - Front-End: testing-frontend.md
+  - Sécurité: security.md
+  - Maintenance: maintenance.md
