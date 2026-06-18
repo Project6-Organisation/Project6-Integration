@@ -2,4 +2,4 @@
 
 ## Documentation complète
 
-👉 https://olivierpflieger.github.io/Project6/
+👉 https://project6-organisation.github.io/Project6-Integration/

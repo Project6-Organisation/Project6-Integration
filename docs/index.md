@@ -2,13 +2,16 @@
 
 ## Stack Technique
 
-![Back-End](https://img.shields.io/badge/Back--End-.NET%20Core%208%20API-512BD4?logo=dotnet&logoColor=white)
-![Front-End](https://img.shields.io/badge/Front--End-Angular%2021.2.3-DD0031?logo=angular&logoColor=white)
-![Database](https://img.shields.io/badge/Database-PostgreSQL%2015--Alpine-336791?logo=postgresql&logoColor=white)
+![Back-End](https://img.shields.io/badge/Back--End-Java%2017%20%7C%20Spring%20Boot%203-6DB33F?logo=springboot&logoColor=white)
+![Front-End](https://img.shields.io/badge/Front--End-Angular%2017.3-DD0031?logo=angular&logoColor=white)
+![Development DB](https://img.shields.io/badge/Development%20DB-HyperSQL-336791)
+![Production DB](https://img.shields.io/badge/Production%20DB-PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 
 ## Documentation
 
-- [Guide de démarrage Back-End](backend.md)
-- [Guide de démarrage Front-End](frontend.md)
+Pour les informations techniques concernant le démarrage en local du Back-End et du Front-End, voir README.MD projet Appli6
+
+
+- [Guide de démarrage local Back-End et Front-End](Project6-Application.md)
 - [Tests Back-End](testing-backend.md)
 - [Tests Front-End](testing-frontend.md)
