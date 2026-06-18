@@ -16,13 +16,7 @@ jobs:
 
       - name: Checkout du code
         uses: actions/checkout@v6
-
-      - name: Checkout Application repository
-        uses: actions/checkout@v4
-        with:
-          repository: Project6-Organisation/Project6-Application
-          path: application
-
+      
       - name: Installer Python
         uses: actions/setup-python@v5
         with:
@@ -30,13 +24,7 @@ jobs:
 
       - name: Installer MkDocs
         run: pip install mkdocs mkdocs-material
-
-      - name: Copy README du Project6-Application
-        run: |
-          cp application/README.md docs/Project6-Application.md
-          cp application/front/src/favicon.png docs/Project6-Application/front/src/favicon.png
-          cp application/misc/screenshots/screenshot_2.png docs/Project6-Application/misc/screenshots/screenshot_2.png
-
+      
       - name: Déployer le site
         run: mkdocs gh-deploy --force
 
