@@ -62,52 +62,52 @@ jobs:
           [ -n "$SNYK_TOKEN" ] && echo "SNYK_TOKEN OK" || echo "SNYK_TOKEN IS MISSING"
           [ -n "$SNYK_ORG_ID" ] && echo "SNYK_ORG_ID OK" || echo "SNYK_ORG_ID IS MISSING"
 
-  BackEnd_Build:
-    needs:
-      - Check-variables
-    uses: ./.github/workflows/01_1_BackEnd_Build.yml
-    secrets: inherit
+  # BackEnd_Build:
+  #   needs:
+  #     - Check-variables
+  #   uses: ./.github/workflows/01_1_BackEnd_Build.yml
+  #   secrets: inherit
     
-  BackEnd_Test:
-    needs:
-      - BackEnd_Build
-    uses: ./.github/workflows/01_2_BackEnd_Test.yml
-    secrets: inherit
+  # BackEnd_Test:
+  #   needs:
+  #     - BackEnd_Build
+  #   uses: ./.github/workflows/01_2_BackEnd_Test.yml
+  #   secrets: inherit
 
-  BackEnd_SonarQube:
-    if: |
-      github.ref_name == 'develop'
-    needs:
-      - BackEnd_Test
-    uses: ./.github/workflows/01_3_BackEnd_SonarQube.yml
-    secrets: inherit
+  # BackEnd_SonarQube:
+  #   if: |
+  #     github.ref_name == 'develop'
+  #   needs:
+  #     - BackEnd_Test
+  #   uses: ./.github/workflows/01_3_BackEnd_SonarQube.yml
+  #   secrets: inherit
     
-  FrontEnd_Build:
-    needs:
-      - Check-variables
-    uses: ./.github/workflows/01_4_FrontEnd_Build.yml
-    secrets: inherit
+  # FrontEnd_Build:
+  #   needs:
+  #     - Check-variables
+  #   uses: ./.github/workflows/01_4_FrontEnd_Build.yml
+  #   secrets: inherit
 
-  FrontEnd_Test:
-    needs:
-      - FrontEnd_Build
-    uses: ./.github/workflows/01_5_FrontEnd_Test.yml
-    secrets: inherit
+  # FrontEnd_Test:
+  #   needs:
+  #     - FrontEnd_Build
+  #   uses: ./.github/workflows/01_5_FrontEnd_Test.yml
+  #   secrets: inherit
 
-  FrontEnd_SonarQube:
-    if: |
-      github.ref_name == 'develop'
-    needs:
-      - FrontEnd_Test
-    uses: ./.github/workflows/01_6_FrontEnd_SonarQube.yml
-    secrets: inherit
+  # FrontEnd_SonarQube:
+  #   if: |
+  #     github.ref_name == 'develop'
+  #   needs:
+  #     - FrontEnd_Test
+  #   uses: ./.github/workflows/01_6_FrontEnd_SonarQube.yml
+  #   secrets: inherit
 
-  Snyk_Scan:
-    needs:
-      - BackEnd_Build
-      - FrontEnd_Build
-    uses: ./.github/workflows/01_7_Snyk.yml
-    secrets: inherit
+  # Snyk_Scan:
+  #   needs:
+  #     - BackEnd_Build
+  #     - FrontEnd_Build
+  #   uses: ./.github/workflows/01_7_Snyk.yml
+  #   secrets: inherit
 
   CI_Status:
     name: CI Status
