@@ -1,4 +1,4 @@
-# Projet DataShare
+# Projet MicroCRM
 
 ## Stack Technique
 
@@ -8,9 +8,6 @@
 ![Production DB](https://img.shields.io/badge/Production%20DB-PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 
 ## Documentation
-
-Pour les informations techniques concernant le démarrage en local du Back-End et du Front-End, voir README.MD projet Appli6
-
 
 - [Guide de démarrage local Back-End et Front-End](Project6-Application.md)
 - [Tests Back-End](testing-backend.md)
