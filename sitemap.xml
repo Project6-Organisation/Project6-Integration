@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://github.com/olivierPflieger/Project6/</loc>
+         <lastmod>2026-06-19</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/olivierPflieger/Project6/backend/</loc>
+         <lastmod>2026-06-19</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/olivierPflieger/Project6/frontend/</loc>
+         <lastmod>2026-06-19</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/olivierPflieger/Project6/maintenance/</loc>
+         <lastmod>2026-06-19</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/olivierPflieger/Project6/security/</loc>
+         <lastmod>2026-06-19</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/olivierPflieger/Project6/testing-backend/</loc>
+         <lastmod>2026-06-19</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/olivierPflieger/Project6/testing-frontend/</loc>
+         <lastmod>2026-06-19</lastmod>
+    </url>
+</urlset>
