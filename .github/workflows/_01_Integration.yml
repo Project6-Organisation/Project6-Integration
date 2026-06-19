@@ -109,22 +109,22 @@ jobs:
   #   uses: ./.github/workflows/01_7_Snyk.yml
   #   secrets: inherit
 
-  CI_Status:
-    name: CI Status
+  # CI_Status:
+  #   name: CI Status
     
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+  #   runs-on: [self-hosted, project6]
+  #   # runs-on: ubuntu-latest
 
-    needs:
-      - BackEnd_Build
-      - BackEnd_Test
-      - FrontEnd_Build
-      - FrontEnd_Test
-      - BackEnd_SonarQube
-      - FrontEnd_SonarQube
-      - Snyk_Scan
+  #   needs:
+  #     - BackEnd_Build
+  #     - BackEnd_Test
+  #     - FrontEnd_Build
+  #     - FrontEnd_Test
+  #     - BackEnd_SonarQube
+  #     - FrontEnd_SonarQube
+  #     - Snyk_Scan
 
-    if: always()
+  #   if: always()
 
-    steps:
-      - run: echo "All checks passed"
+  #   steps:
+  #     - run: echo "All checks passed"
