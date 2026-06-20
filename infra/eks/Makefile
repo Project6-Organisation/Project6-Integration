@@ -1,10 +1,15 @@
-.PHONY: check deploy fmt validate plan apply destroy
+.PHONY: initcheck deploy fmt validate plan apply destroy
+
+init:
+	terraform init
 
 check: fmt validate plan
 
 deploy: check apply
 
-# Terraform
+init:
+	terraform init
+
 fmt:
 	terraform fmt
 

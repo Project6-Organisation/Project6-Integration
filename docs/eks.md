@@ -1,14 +1,25 @@
 # EKS
 
-Cette infrastructure est détruite après les tests avec terraform destroy afin de limiter les coûts AWS, notamment ceux liés au NAT Gateway, aux nodes EC2 et au control plane EKS.
-
 ## Création infrastructure EKS
+
+
+Cette infrastructure est détruite après les tests avec terraform destroy afin de limiter les coûts AWS, notamment ceux liés au NAT Gateway, aux nodes EC2 et au control plane EKS.
+https://developer.hashicorp.com/terraform/tutorials/kubernetes/eks#configure-kubectl
+
 
 ```shell
 # Terminal
 cd infra/eks
 make check
 make deploy
+```
+
+Puis, configurer kubectl
+
+```shell
+# Terminal
+aws eks --region $(terraform output -raw region) update-kubeconfig \
+    --name $(terraform output -raw cluster_name)
 ```
 
 La hiérarchie créée est 
