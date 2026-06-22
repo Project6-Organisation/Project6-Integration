@@ -14,6 +14,13 @@ make check
 make deploy
 ```
 
+Au besoin, installer kubectl
+
+```shell
+# Terminal
+sudo snap install kubectl --classic
+```
+
 Puis, configurer kubectl
 
 ```shell
@@ -31,6 +38,15 @@ Cluster EKS
      │
      ├── EC2 #1
      └── EC2 #2
+```
+
+### Principales commandes
+
+Pour lister les nodes 
+
+```shell
+# Terminal
+kubectl get nodes
 ```
 
 Pour lister les nodes group 
@@ -55,4 +71,62 @@ aws ec2 describe-instances \
    --region us-east-1 \
    --filters "Name=tag:eks:cluster-name,Values=microcrm-eks" \
    --query "Reservations[].Instances[].{id:InstanceId,state:State.Name,type:InstanceType,subnet:SubnetId,privateIp:PrivateIpAddress}"
+```
+
+### POC rapide pour vérifier que tout est ok
+
+Créer un namespace
+
+```shell
+kubectl create namespace hello
+```
+
+Déployer une image hello/nginx
+
+```shell
+kubectl create deployment hello-nginx --image=nginx:latest --replicas=3 -n hello
+```
+
+Vérifier les pods
+
+```shell
+kubectl get pods -n hello -o wide
+```
+
+Exposer le service
+
+```shell
+kubectl expose deployment hello-nginx --type=LoadBalancer --port=80 --target-port=80 -n hello
+```
+
+Récupérer l'ip public
+
+```shell
+kubectl get svc -n hello
+```
+
+Tester
+
+```shell
+curl http://<EXTERNAL-IP>
+```
+
+Tester la résilience
+
+Afficher les pods 
+
+```shell
+kubectl get pods -n hello
+```
+
+Puis en supprimer 1
+
+```shell
+kubectl delete pod <nom-du-pod> -n hello
+```
+
+Vérifier ensuite qu'il en recréé bien 1
+
+```shell
+kubectl get pods -n hello
 ```

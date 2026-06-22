@@ -17,7 +17,7 @@ L'application Front-end est disponible à l'adresse http://localhost
 
 ### Configurer https
 
-1. Lancer le conteneur avec un volume pour récupérer le certificat Caddy
+1. Lancer le conteneur avec un volume pour persister l'autorité de certification locale générée par Caddy et éviter de devoir réinstaller le certificat racine à chaque recréation du conteneur
 
 ```shell
 # Terminal depuis le répertoire de l'application
@@ -27,7 +27,8 @@ docker run -d --name microcrm-front -p 80:80 -p 443:443 -v caddy-data:/home/appu
 2. Copier le certificat racine root.crt depuis le conteneur vers Windows
 
 ```shell
-# Terminal depuis le répertoire de l'application
+# Terminal depuis d:\temp par exemple
+cd /mnt/d/temp
 docker cp microcrm-front:/home/appuser/.local/share/caddy/pki/authorities/local/root.crt .
 ```
 
@@ -35,6 +36,7 @@ docker cp microcrm-front:/home/appuser/.local/share/caddy/pki/authorities/local/
 
 ```shell
 # Terminal depuis le répertoire de l'application
+cd d:\temp
 Import-Certificate -FilePath .\root.crt -CertStoreLocation Cert:\LocalMachine\Root
 ```
 
@@ -47,8 +49,6 @@ docker run -d --name microcrm-front -p 80:80 -p 443:443 -v caddy-data:/home/appu
 ```
 
 L'application Front-end est disponible à l'adresse http://localhost ou https://localhost:443
-
-Note : Le certificat est valide, il n'y a plus de warning. Cependant l'application est toujours marquée 'non sécurisée'
 
 ## Démarrer depuis le répertoire de l'application
 
@@ -82,7 +82,7 @@ L'application Front-end est disponible à l'adresse http://localhost
 
 ### Configurer https
 
-1. Lancer le conteneur avec un volume pour récupérer le certificat Caddy
+1. Lancer le conteneur avec un volume pour persister l'autorité de certification locale générée par Caddy et éviter de devoir réinstaller le certificat racine à chaque recréation du conteneur
 
 ```shell
 # Terminal depuis le répertoire de l'application
@@ -116,5 +116,3 @@ docker run -d --name microcrm-front -p 80:80 -p 443:443 -v caddy-data:/home/appu
 ```
 
 L'application Front-end est disponible à l'adresse http://localhost ou https://localhost:443
-
-Note : Le certificat est valide, il n'y a plus de warning. Cependant l'application est toujours marquée 'non sécurisée'
