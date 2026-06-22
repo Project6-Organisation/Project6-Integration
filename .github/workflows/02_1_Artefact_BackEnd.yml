@@ -49,6 +49,25 @@ jobs:
             -t "$IMAGE_NAME:latest" \
             .
 
+      - name: Scan Backend image with Trivy
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: '${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}'
+          format: table
+          exit-code: '1'
+          output: 'back-trivy-results.txt'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL, HIGH'
+
+      - name: Upload Trivy scan results as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: back-trivy-results
+          path: back-trivy-results.txt
+          retention-days: 1
+
       - name: Push Docker image
         run: |
           docker push "$IMAGE_NAME:$IMAGE_TAG"
