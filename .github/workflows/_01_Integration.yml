@@ -81,9 +81,9 @@ jobs:
     secrets: inherit
 
   BackEnd_SonarQube:
+    # Desactivation temporaire du build
     #if: |
     #  github.ref_name == 'develop'
-    # Desactivation temporaire du build
     if: false
     # End desactivation temporaire du build
     needs:
@@ -111,10 +111,10 @@ jobs:
 
   FrontEnd_SonarQube:
     # Desactivation temporaire du build
+    # if: |
+    #   github.ref_name == 'develop'
     if: false
     # End desactivation temporaire du build
-    if: |
-      github.ref_name == 'develop'
     needs:
       - FrontEnd_Test
     uses: ./.github/workflows/01_6_FrontEnd_SonarQube.yml
