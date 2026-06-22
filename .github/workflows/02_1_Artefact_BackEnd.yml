@@ -45,7 +45,6 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --target back \
             -t "$IMAGE_NAME:$IMAGE_TAG" \
             -t "$IMAGE_NAME:latest" \
             .
