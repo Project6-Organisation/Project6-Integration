@@ -165,7 +165,7 @@ jobs:
     needs:
       - Semantic_Release
     
-    uses: ./.github/workflows/02_1_BackEnd_Docker_Build.yml
+    uses: ./.github/workflows/02_1_Artefact_BackEnd.yml
     
     with:
       image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}
@@ -177,7 +177,7 @@ jobs:
     needs:
       - Semantic_Release
     
-    uses: ./.github/workflows/02_2_FrontEnd_Docker_Build.yml
+    uses: ./.github/workflows/02_2_Artefact_FrontEnd.yml
     
     with:
       image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}
