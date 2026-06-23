@@ -1,0 +1,82 @@
+name: FrontEnd_docker_Build
+
+on:
+  workflow_call:
+    
+    # Faudra le mettre en place pour le déploiement sur EKS (pour le runner github)
+    # secrets:
+    #     AWS_ACCESS_KEY_ID:
+    #       required: true
+    #     AWS_SECRET_ACCESS_KEY:
+    #       required: true 
+    #     AWS_REGION: 
+    #       required: true
+    #     
+    inputs:
+      action:
+        required: true
+        type: string   
+      
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: read
+
+jobs:
+  eks-infra:
+    runs-on: [self-hosted, project6]
+
+    defaults:
+      run:
+        working-directory: integration/infra/eks
+
+    steps:
+
+      - name: Check action
+        run: |
+          echo "Action: ${{ inputs.action }}"
+          if [ "${{ inputs.action }}" != "apply" ] && [ "${{ inputs.action }}" != "destroy" ]; then
+            echo "Invalid action: ${{ inputs.action }}"
+            echo "Allowed values: apply, destroy"
+            exit 1
+          fi
+  
+      - name: Checkout integration repository
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+
+      - name: Create bucket if not exists
+        run: |
+          aws s3api head-bucket \
+            --bucket project6-terraform-state \
+            2>/dev/null \
+            || aws s3 mb s3://project6-terraform-state --region us-east-1
+
+      # - name: Restore local Terraform state
+      #   run: |
+      #     mkdir -p /home/keryss/tfstate/project6-eks
+      #     cp -f /home/keryss/tfstate/project6-eks/terraform.tfstate* . 2>/dev/null || true
+
+      # - name: Terraform init
+      #   run: terraform init
+
+      # - name: Terraform plan
+      #   if: inputs.action == 'apply'
+      #   run: terraform plan
+
+      # - name: Terraform apply
+      #   if: inputs.action == 'apply'
+      #   run: terraform apply -auto-approve
+
+      # - name: Terraform destroy
+      #   if: inputs.action == 'destroy'
+      #   run: terraform destroy -auto-approve
+
+      # - name: Save local Terraform state
+      #   if: always()
+      #   run: |
+      #     mkdir -p /home/keryss/tfstate/project6-eks
+      #     cp -f terraform.tfstate* /home/keryss/tfstate/project6-eks/ 2>/dev/null || true

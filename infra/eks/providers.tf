@@ -14,14 +14,14 @@ terraform {
     }
   }
 
-  # backend "s3" {
-  #   bucket                     = "project6-terraform-state-bucket-1755526674"
-  #   key                        = "project6/terraform.tfstate"
-  #   region                     = "us-east-1"
-  #   encrypt                    = true
-  #   use_lockfile               = true
-  #   skip_requesting_account_id = false
-  # }
+  backend "s3" {
+    bucket                     = "project6-terraform-state"
+    key                        = "eks/terraform.tfstate"
+    region                     = "us-east-1"
+    encrypt                    = true
+    use_lockfile               = true
+    skip_requesting_account_id = false
+  }
 }
 
 ################################################################################
