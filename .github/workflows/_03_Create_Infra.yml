@@ -36,9 +36,9 @@ jobs:
       - name: Check action
         run: |
           echo "Action: ${{ inputs.action }}"
-          if [ "${{ inputs.action }}" != "apply" ] && [ "${{ inputs.action }}" != "destroy" ]; then
+          if [ "${{ inputs.action }}" != "plan" ] && [ "${{ inputs.action }}" != "apply" ] && [ "${{ inputs.action }}" != "destroy" ]; then
             echo "Invalid action: ${{ inputs.action }}"
-            echo "Allowed values: apply, destroy"
+            echo "Allowed values: plan, apply, destroy"
             exit 1
           fi  
 
