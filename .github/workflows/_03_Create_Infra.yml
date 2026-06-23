@@ -18,10 +18,7 @@ on:
         type: string   
       
 permissions:
-  contents: write
-  packages: write
-  issues: write
-  pull-requests: read
+  contents: read
 
 jobs:
   eks-infra:
