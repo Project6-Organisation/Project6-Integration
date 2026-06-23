@@ -1,5 +1,6 @@
 environment   = "staging"
 naming_prefix = "project6-eks-staging"
+aws_region    = "us-east-1"
 
 cluster_config = {
   name    = "project6-eks-staging"
