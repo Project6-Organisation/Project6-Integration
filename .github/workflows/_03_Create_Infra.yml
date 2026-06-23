@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 jobs:
-  eks-infra:
+  create-infra:
     runs-on: [self-hosted, project6]
 
     defaults:
@@ -45,9 +45,9 @@ jobs:
       - name: Create bucket if not exists
         run: |
           aws s3api head-bucket \
-            --bucket project6-terraform-state \
+            --bucket project6-terraform-state-230620261146 \
             2>/dev/null \
-            || aws s3 mb s3://project6-terraform-state --region us-east-1
+            || aws s3 mb s3://project6-terraform-state-230620261146 --region us-east-1
       
       - name: Terraform init
         run: terraform init
