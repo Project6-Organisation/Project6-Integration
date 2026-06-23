@@ -5,5 +5,5 @@ resource "random_string" "suffix" {
 }
 
 resource "aws_s3_bucket" "poc" {
-  bucket = "project6-poc-${random_string.suffix.result}"
+  bucket = "project6-poc-${var.environment}-${random_string.suffix.result}"
 }
