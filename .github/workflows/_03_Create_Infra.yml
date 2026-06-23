@@ -59,7 +59,7 @@ jobs:
         run: terraform validate
 
       - name: Terraform plan
-        if: inputs.action == 'plan'
+        if: inputs.action == 'plan' || inputs.action == 'apply'
         run: terraform plan -out=tfplan
       
       - name: Terraform apply
