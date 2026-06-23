@@ -60,11 +60,11 @@ jobs:
 
       - name: Terraform plan
         if: inputs.action == 'apply'
-        run: terraform plan
+        run: terraform plan -out=tfplan
       
       # - name: Terraform apply
       #   if: inputs.action == 'apply'
-      #   run: terraform apply -auto-approve
+      #   run: terraform apply -auto-approve tfplan
 
       # - name: Terraform destroy
       #   if: inputs.action == 'destroy'
