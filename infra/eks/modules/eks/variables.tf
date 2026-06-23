@@ -1,4 +1,9 @@
+variable "environment" {
+  type = string
+}
+
 variable "common_tags" {}
+
 variable "naming_prefix" {}
 
 variable "public_subnets_id" {}
@@ -16,33 +21,17 @@ variable "node_groups" {
     ami_type       = string
     capacity_type  = string
     disk_size      = number
+    
     scaling_config = object({
       desired_size = number
       min_size     = number
       max_size     = number
     })
+    
     update_config = object({
       max_unavailable = number
     })
   }))
-  default = [
-    {
-      name           = "project6-EKS-Cluster-Node-Group"
-      instance_types = ["t3.medium"]
-      ami_type       = "AL2023_x86_64_STANDARD"
-      capacity_type  = "ON_DEMAND"
-      disk_size      = 20
-      scaling_config = {
-        desired_size = 2
-        max_size     = 3
-        min_size     = 1
-      }
-      update_config = {
-        max_unavailable = 1
-      }
-    },
-  ]
-
 }
 
 variable "addons" {

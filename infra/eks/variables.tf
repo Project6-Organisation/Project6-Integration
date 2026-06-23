@@ -1,3 +1,9 @@
+variable "environment" {
+  type = string
+  description = "Environment for deployment."
+  default = "staging"
+}
+
 variable "aws_region" {
   type        = string
   description = "AWS region to use for resources."
@@ -20,10 +26,24 @@ variable "naming_prefix" {
   default     = "project6-EKS"
 }
 
-variable "environment" {
-  type        = string
-  description = "Environment for deployment"
-  default     = "DEV"
+variable "node_groups" {
+  type = list(object({
+    name           = string
+    instance_types = list(string)
+    ami_type       = string
+    capacity_type  = string
+    disk_size      = number
+
+    scaling_config = object({
+      desired_size = number
+      min_size     = number
+      max_size     = number
+    })
+
+    update_config = object({
+      max_unavailable = number
+    })
+  }))
 }
 
 variable "networking" {

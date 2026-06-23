@@ -31,6 +31,8 @@ module "eks" {
   cluster_config     = var.cluster_config
   common_tags        = local.common_tags
   naming_prefix      = local.naming_prefix
+  node_groups        = var.node_groups
+  environment        = var.environment
 }
 
 ################################################################################

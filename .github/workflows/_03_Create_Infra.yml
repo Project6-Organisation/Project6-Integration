@@ -1,4 +1,4 @@
-name: FrontEnd_docker_Build
+name: Deploy EKS infrastructure with Terraform
 
 on:
   workflow_call:
@@ -7,19 +7,28 @@ on:
         AWS_ACCESS_KEY_ID:
           required: true
         AWS_SECRET_ACCESS_KEY:
-          required: true        
+          required: true
       
     inputs:
       action:
         required: true
         type: string   
-      
+      environment:
+        required: true
+        type: string
+
 permissions:
   contents: read
 
 jobs:
   create-infra:
     runs-on: [self-hosted, project6]
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
 
     defaults:
       run:
@@ -40,7 +49,16 @@ jobs:
             echo "Invalid action: ${{ inputs.action }}"
             echo "Allowed values: plan, apply, destroy"
             exit 1
-          fi  
+          fi
+
+      - name: Check environment
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          if [ "${{ inputs.environment }}" != "staging" ] && [ "${{ inputs.environment }}" != "prod" ]; then
+            echo "Invalid environment: ${{ inputs.environment }}"
+            echo "Allowed values: staging, prod"
+            exit 1
+          fi
 
       - name: Create bucket if not exists
         run: |
@@ -50,7 +68,9 @@ jobs:
             || aws s3 mb s3://project6-terraform-state-230620261146 --region us-east-1
       
       - name: Terraform init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="key=eks/${{ inputs.environment }}/terraform.tfstate"
 
       - name: Terraform format
         run: terraform fmt
@@ -60,7 +80,7 @@ jobs:
 
       - name: Terraform plan
         if: inputs.action == 'plan' || inputs.action == 'apply'
-        run: terraform plan -out=tfplan
+        run: terraform plan -var-file="envs/${{ inputs.environment }}.tfvars" -out=tfplan
       
       - name: Terraform apply
         if: inputs.action == 'apply'
@@ -68,4 +88,4 @@ jobs:
 
       - name: Terraform destroy
         if: inputs.action == 'destroy'
-        run: terraform destroy -auto-approve 
+        run: terraform destroy -var-file="envs/${{ inputs.environment }}.tfvars" -auto-approve
