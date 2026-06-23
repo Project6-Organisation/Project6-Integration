@@ -3,15 +3,12 @@ name: FrontEnd_docker_Build
 on:
   workflow_call:
     
-    # Faudra le mettre en place pour le déploiement sur EKS (pour le runner github)
-    # secrets:
-    #     AWS_ACCESS_KEY_ID:
-    #       required: true
-    #     AWS_SECRET_ACCESS_KEY:
-    #       required: true 
-    #     AWS_REGION: 
-    #       required: true
-    #     
+    secrets:
+        AWS_ACCESS_KEY_ID:
+          required: true
+        AWS_SECRET_ACCESS_KEY:
+          required: true        
+      
     inputs:
       action:
         required: true
@@ -51,29 +48,24 @@ jobs:
             --bucket project6-terraform-state \
             2>/dev/null \
             || aws s3 mb s3://project6-terraform-state --region us-east-1
+      
+      - name: Terraform init
+        run: terraform init
 
-      # - name: Restore local Terraform state
-      #   run: |
-      #     mkdir -p /home/keryss/tfstate/project6-eks
-      #     cp -f /home/keryss/tfstate/project6-eks/terraform.tfstate* . 2>/dev/null || true
+      - name: Terraform format
+        run: terraform fmt
 
-      # - name: Terraform init
-      #   run: terraform init
+      - name: Terraform validate
+        run: terraform validate
 
-      # - name: Terraform plan
-      #   if: inputs.action == 'apply'
-      #   run: terraform plan
-
+      - name: Terraform plan
+        if: inputs.action == 'apply'
+        run: terraform plan
+      
       # - name: Terraform apply
       #   if: inputs.action == 'apply'
       #   run: terraform apply -auto-approve
 
       # - name: Terraform destroy
       #   if: inputs.action == 'destroy'
-      #   run: terraform destroy -auto-approve
-
-      # - name: Save local Terraform state
-      #   if: always()
-      #   run: |
-      #     mkdir -p /home/keryss/tfstate/project6-eks
-      #     cp -f terraform.tfstate* /home/keryss/tfstate/project6-eks/ 2>/dev/null || true
+      #   run: terraform destroy -auto-approve 
