@@ -59,13 +59,13 @@ jobs:
         run: terraform validate
 
       - name: Terraform plan
-        if: inputs.action == 'apply'
+        if: inputs.action == 'plan'
         run: terraform plan -out=tfplan
       
-      # - name: Terraform apply
-      #   if: inputs.action == 'apply'
-      #   run: terraform apply -auto-approve tfplan
+      - name: Terraform apply
+        if: inputs.action == 'apply'
+        run: terraform apply -auto-approve tfplan
 
-      # - name: Terraform destroy
-      #   if: inputs.action == 'destroy'
-      #   run: terraform destroy -auto-approve 
+      - name: Terraform destroy
+        if: inputs.action == 'destroy'
+        run: terraform destroy -auto-approve 
