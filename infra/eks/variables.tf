@@ -1,6 +1,6 @@
 variable "environment" {
-  type = string
-  description = "Deployment environment (staging, prod)." 
+  type        = string
+  description = "Deployment environment (staging, prod)."
 }
 
 variable "aws_region" {
@@ -12,12 +12,12 @@ variable "cluster_config" {
   type = object({
     name    = string
     version = string
-  })  
+  })
 }
 
 variable "naming_prefix" {
   type        = string
-  description = "Naming prefix for all resources."  
+  description = "Naming prefix for all resources."
 }
 
 variable "common_tags" {
@@ -25,7 +25,7 @@ variable "common_tags" {
     Project     = string
     Environment = string
     ManagedBy   = string
-  })  
+  })
 }
 
 variable "node_groups" {
@@ -50,15 +50,15 @@ variable "node_groups" {
 
 variable "networking" {
   type = object({
-    cidr_block      = string
-    region          = string
-    vpc_name        = string
-    azs             = list(string)
-    public_subnets  = list(string)
-    private_subnets = list(string)
-    nat_gateways    = bool
+    cidr_block         = string
+    region             = string
+    vpc_name           = string
+    azs                = list(string)
+    public_subnets     = list(string)
+    private_subnets    = list(string)
+    nat_gateways       = bool
     single_nat_gateway = bool
-  })  
+  })
 }
 
 variable "security_groups" {
