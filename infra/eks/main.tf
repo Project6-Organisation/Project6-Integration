@@ -1,15 +1,19 @@
+module "poc" {
+  source          = "./modules/poc"
+}
+
 ################################################################################
 # Create VPC and components
 ################################################################################
 
-module "vpc" {
-  source          = "./modules/vpc"
-  networking      = var.networking
-  security_groups = var.security_groups
-  common_tags     = local.common_tags
-  naming_prefix   = local.naming_prefix
-  cluster_name    = var.cluster_config.name
-}
+# module "vpc" {
+#   source          = "./modules/vpc"
+#   networking      = var.networking
+#   security_groups = var.security_groups
+#   common_tags     = local.common_tags
+#   naming_prefix   = local.naming_prefix
+#   cluster_name    = var.cluster_config.name
+# }
 
 ################################################################################
 # Create EKS Cluster and Node Groups
