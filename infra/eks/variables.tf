@@ -26,6 +26,19 @@ variable "naming_prefix" {
   default     = "project6-EKS"
 }
 
+variable "common_tags" {
+  type = object({
+    Project     = string
+    Environment = string
+    ManagedBy   = string
+  })
+  default = {
+    Project     = "Project6"
+    Environment = "staging"
+    ManagedBy   = "Terraform"
+  }
+}
+
 variable "node_groups" {
   type = list(object({
     name           = string
