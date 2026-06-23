@@ -1,5 +1,5 @@
 environment   = "staging"
-naming_prefix = "project6-EKS-STAGING"
+naming_prefix = "project6-eks-staging"
 
 cluster_config = {
   name    = "project6-eks-staging"
@@ -14,7 +14,7 @@ common_tags = {
 
 node_groups = [
   {
-    name           = "project6-EKS-STAGING-NodeGroup"
+    name           = "project6-eks-staging-NodeGroup"
     instance_types = ["t3.medium"]
     ami_type       = "AL2023_x86_64_STANDARD"
     capacity_type  = "ON_DEMAND"
@@ -31,3 +31,14 @@ node_groups = [
     }
   }
 ]
+
+networking = {
+  cidr_block         = "10.0.0.0/16"
+  region             = "us-east-1"
+  vpc_name           = "project6-eks-staging-vpc"
+  azs                = ["us-east-1a"]
+  public_subnets     = ["10.0.1.0/24"]
+  private_subnets    = ["10.0.3.0/24"]
+  nat_gateways       = true
+  single_nat_gateway = true
+}

@@ -1,29 +1,23 @@
 variable "environment" {
   type = string
-  description = "Environment for deployment."
-  default = "staging"
+  description = "Deployment environment (staging, prod)." 
 }
 
 variable "aws_region" {
   type        = string
   description = "AWS region to use for resources."
-  default     = "us-east-1"
 }
 
 variable "cluster_config" {
   type = object({
     name    = string
     version = string
-  })
-  default = {
-    name    = "project6-EKS-Cluster"
-    version = "1.32"
-  }
+  })  
 }
+
 variable "naming_prefix" {
   type        = string
-  description = "Naming prefix for all resources."
-  default     = "project6-EKS"
+  description = "Naming prefix for all resources."  
 }
 
 variable "common_tags" {
@@ -31,12 +25,7 @@ variable "common_tags" {
     Project     = string
     Environment = string
     ManagedBy   = string
-  })
-  default = {
-    Project     = "Project6"
-    Environment = "staging"
-    ManagedBy   = "Terraform"
-  }
+  })  
 }
 
 variable "node_groups" {
@@ -68,16 +57,8 @@ variable "networking" {
     public_subnets  = list(string)
     private_subnets = list(string)
     nat_gateways    = bool
-  })
-  default = {
-    cidr_block      = "10.0.0.0/16"
-    region          = "us-east-1"
-    vpc_name        = "project6-vpc"
-    azs             = ["us-east-1a", "us-east-1b"]
-    public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
-    private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
-    nat_gateways    = true
-  }
+    single_nat_gateway = bool
+  })  
 }
 
 variable "security_groups" {

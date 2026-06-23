@@ -34,6 +34,19 @@ variable "node_groups" {
   }))
 }
 
+variable "networking" {
+  type = object({
+    cidr_block      = string
+    region          = string
+    vpc_name        = string
+    azs             = list(string)
+    public_subnets  = list(string)
+    private_subnets = list(string)
+    nat_gateways    = bool
+    single_nat_gateway = bool
+  })  
+}
+
 variable "addons" {
   type = map(object({
     name        = string

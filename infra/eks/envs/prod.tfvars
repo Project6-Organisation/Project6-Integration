@@ -1,5 +1,6 @@
 environment   = "prod"
-naming_prefix = "project6-EKS-PROD"
+naming_prefix = "project6-eks-prod"
+aws_region    = "us-east-1"
 
 cluster_config = {
   name    = "project6-eks-prod"
@@ -14,7 +15,7 @@ common_tags = {
 
 node_groups = [
   {
-    name           = "project6-EKS-PROD-NodeGroup"
+    name           = "project6-eks-prod-NodeGroup"
     instance_types = ["t3.medium"]
     ami_type       = "AL2023_x86_64_STANDARD"
     capacity_type  = "ON_DEMAND"
@@ -31,3 +32,14 @@ node_groups = [
     }
   }
 ]
+
+networking = {
+  cidr_block         = "10.0.0.0/16"
+  region             = "us-east-1"
+  vpc_name           = "project6-eks-prod-vpc"
+  azs                = ["us-east-1a", "us-east-1b"]
+  public_subnets     = ["10.0.1.0/24", "10.0.2.0/24"]
+  private_subnets    = ["10.0.3.0/24", "10.0.4.0/24"]
+  nat_gateways       = true
+  single_nat_gateway = false
+}
