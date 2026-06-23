@@ -30,6 +30,12 @@ jobs:
 
     steps:
 
+      - name: Checkout integration repository
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+
       - name: Check action
         run: |
           echo "Action: ${{ inputs.action }}"
@@ -37,13 +43,7 @@ jobs:
             echo "Invalid action: ${{ inputs.action }}"
             echo "Allowed values: apply, destroy"
             exit 1
-          fi
-  
-      - name: Checkout integration repository
-        uses: actions/checkout@v4
-        with:
-          repository: Project6-Organisation/Project6-Integration
-          path: integration
+          fi  
 
       - name: Create bucket if not exists
         run: |
