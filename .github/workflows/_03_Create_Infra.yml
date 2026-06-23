@@ -64,8 +64,8 @@ jobs:
       
       - name: Terraform apply
         if: inputs.action == 'apply'
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply tfplan
 
       - name: Terraform destroy
         if: inputs.action == 'destroy'
-        run: terraform destroy -auto-approve 
+        run: terraform destroy 
