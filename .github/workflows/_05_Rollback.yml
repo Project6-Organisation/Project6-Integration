@@ -1,4 +1,4 @@
-name: Deploy EKS infrastructure with Terraform
+name: Rollback Helm release
 
 on:
   workflow_call:
@@ -9,11 +9,11 @@ on:
         AWS_SECRET_ACCESS_KEY:
           required: true
       
-    inputs:
-      action:
-        required: true
-        type: string   
+    inputs:      
       environment:
+        required: true
+        type: string
+      revision:
         required: true
         type: string
 
