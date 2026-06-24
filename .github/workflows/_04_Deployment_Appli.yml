@@ -116,7 +116,3 @@ jobs:
         run: |
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
-
-      - name: Show Helm history
-        run: |
-          helm history microcrm -n microcrm-${{ inputs.environment }}
