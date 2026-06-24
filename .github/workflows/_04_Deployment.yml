@@ -66,8 +66,8 @@ jobs:
 
       - name: Deploy application with Helm
         run: |
-          helm upgrade --install microcrm ./helm \
-            -f ./helm/values-${{ inputs.environment }}.yaml \
+          helm upgrade --install microcrm integration/helm \
+            -f integration/helm/values-${{ inputs.environment }}.yaml \
             --namespace microcrm-${{ inputs.environment }} \
             --create-namespace \
             --set backend.image.tag=${{ inputs.image_tag }} \
