@@ -36,14 +36,6 @@ module "eks" {
   environment        = var.environment
 }
 
-output "eks_oidc_provider_arn" {
-  value = module.eks.oidc_provider_arn
-}
-
-output "eks_oidc_provider_url" {
-  value = module.eks.oidc_provider_url
-}
-
 ################################################################################
 # Update kubeconfig with created cluster
 ################################################################################
