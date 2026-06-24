@@ -63,3 +63,49 @@ resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.NodeGroupRole.name
 }
+
+################################################################################
+# AWS LOAD BALANCER CONTROLLER ROLE
+################################################################################
+
+data "aws_iam_policy_document" "aws_load_balancer_controller_assume_role" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRoleWithWebIdentity"
+    ]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.eks_oidc_provider.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.eks_oidc_provider.url, "https://", "")}:sub"
+      values = [
+        "system:serviceaccount:kube-system:aws-load-balancer-controller"
+      ]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.eks_oidc_provider.url, "https://", "")}:aud"
+      values = [
+        "sts.amazonaws.com"
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "AWSLoadBalancerControllerRole" {
+  name = "${var.naming_prefix}-AWSLoadBalancerControllerRole"
+
+  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "AWSLoadBalancerControllerPolicyAttachment" {
+  role       = aws_iam_role.AWSLoadBalancerControllerRole.name
+  policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
+}
