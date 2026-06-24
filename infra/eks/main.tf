@@ -35,6 +35,7 @@ module "eks" {
   node_groups        = var.node_groups
   environment        = var.environment
   aws_region         = var.aws_region
+  vpc_id             = module.vpc.vpc_id
 }
 
 ################################################################################

@@ -61,3 +61,7 @@ variable "addons" {
     }
   }
 }
+
+variable "vpc_id" {
+  type = string
+}

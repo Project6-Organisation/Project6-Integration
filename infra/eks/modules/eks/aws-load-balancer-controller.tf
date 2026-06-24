@@ -31,6 +31,11 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = aws_iam_role.AWSLoadBalancerControllerRole.arn
   }
 
+  set {
+    name  = "vpcId"
+    value = var.vpc_id
+  }
+
   depends_on = [
     aws_eks_node_group.node-ec2,
     aws_iam_role_policy_attachment.AWSLoadBalancerControllerPolicyAttachment
