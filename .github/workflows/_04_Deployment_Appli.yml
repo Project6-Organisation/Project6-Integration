@@ -25,6 +25,8 @@ jobs:
   deploy-helm:
     runs-on: [self-hosted, project6]
 
+    environment: ${{ inputs.environment }}
+
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -55,6 +57,11 @@ jobs:
             echo "Invalid image tag: ${{ inputs.image_tag }}"
             exit 1
           fi
+
+      - name: Display environment variables
+        run: |
+          echo "AWS_REGION: $AWS_REGION"
+          echo "AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION"
 
       - name: Configure kubeconfig for EKS
         run: |
