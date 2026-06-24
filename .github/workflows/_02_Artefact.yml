@@ -1,4 +1,4 @@
-name: Release_And_Docker
+name: Docker build and push artifacts on Github package registry
 
 on:
   workflow_call:    

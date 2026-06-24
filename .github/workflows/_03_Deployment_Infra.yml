@@ -1,4 +1,4 @@
-name: Deploy EKS infrastructure with Terraform
+name: Deployment infrastructure
 
 on:
   workflow_call:
@@ -85,6 +85,34 @@ jobs:
       - name: Terraform apply
         if: inputs.action == 'apply'
         run: terraform apply -auto-approve tfplan
+
+      #  Destoy section
+      - name: Configure kubeconfig before cleanup
+        if: inputs.action == 'destroy'
+        #  Continue on error to avoid failing the workflow if the kubeconfig cannot be configured 
+        #  (e.g., if the cluster is already deleted)
+        continue-on-error: true
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name project6-eks-${{ inputs.environment }}
+
+      - name: Uninstall Helm release
+        if: inputs.action == 'destroy'
+        continue-on-error: true
+        run: |
+          helm uninstall microcrm -n microcrm-${{ inputs.environment }}
+
+      - name: Delete application namespace
+        if: inputs.action == 'destroy'
+        continue-on-error: true
+        run: |
+          kubectl delete namespace microcrm-${{ inputs.environment }} --ignore-not-found=true
+
+      - name: Wait for LoadBalancer cleanup
+        if: inputs.action == 'destroy'
+        continue-on-error: true
+        run: |
+          echo "Waiting for AWS LoadBalancer resources cleanup..."
+          sleep 90
 
       - name: Terraform destroy
         if: inputs.action == 'destroy'

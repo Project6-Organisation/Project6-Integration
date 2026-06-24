@@ -36,5 +36,3 @@ Pour lister les nodes
 helm history microcrm -n microcrm-staging
 ```
 
-
-

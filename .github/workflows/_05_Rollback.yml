@@ -1,4 +1,4 @@
-name: Rollback Helm release
+name: Rollback
 
 on:
   workflow_call:
@@ -24,10 +24,16 @@ jobs:
   rollback:
     runs-on: [self-hosted, project6]
 
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+
     steps:
       - name: Configure kubeconfig for EKS
         run: |
-          aws eks update-kubeconfig --region us-east-1 --name project6-eks-${{ inputs.environment }}
+          aws eks update-kubeconfig --region $AWS_REGION --name project6-eks-${{ inputs.environment }}
 
       - name: Show Helm history
         run: |
