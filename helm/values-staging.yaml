@@ -1,0 +1,11 @@
+namespace: microcrm-staging
+
+backend:
+  image:
+    tag: develop-16c2d7a
+  replicas: 1
+
+frontend:
+  image:
+    tag: develop-16c2d7a
+  replicas: 2

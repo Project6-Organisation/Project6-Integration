@@ -1,0 +1,79 @@
+name: Deployment
+
+on:
+  workflow_call:
+    
+    secrets:
+        AWS_ACCESS_KEY_ID:
+          required: true
+        AWS_SECRET_ACCESS_KEY:
+          required: true
+      
+    inputs:      
+      environment:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy-helm:
+    runs-on: [self-hosted, project6]
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+
+    steps:
+
+      - name: Checkout integration repository
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+      
+      - name: Check environment
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          if [ "${{ inputs.environment }}" != "staging" ] && [ "${{ inputs.environment }}" != "prod" ]; then
+            echo "Invalid environment: ${{ inputs.environment }}"
+            echo "Allowed values: staging, prod"
+            exit 1
+          fi
+
+      - name: Check image tag
+        run: |
+          echo "Image Tag: ${{ inputs.image_tag }}"
+          if [ "${{ inputs.image_tag }}" = "" ]; then
+            echo "Invalid image tag: ${{ inputs.image_tag }}"
+            exit 1
+          fi
+
+      - name: Configure kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name project6-eks-${{ inputs.environment }}
+
+      - name: Check cluster access
+        run: |
+          kubectl get nodes
+
+      - name: Deploy application with Helm
+        run: |
+          helm upgrade --install microcrm ./helm/microcrm \
+            -f ./helm/microcrm/values-${{ inputs.environment }}.yaml \
+            --namespace microcrm-${{ inputs.environment }} \
+            --create-namespace \
+            --set backend.image.tag=${{ inputs.image_tag }} \
+            --set frontend.image.tag=${{ inputs.image_tag }}
+
+      - name: Check deployment
+        run: |
+          kubectl get pods -n microcrm-${{ inputs.environment }}
+          kubectl get svc -n microcrm-${{ inputs.environment }}
