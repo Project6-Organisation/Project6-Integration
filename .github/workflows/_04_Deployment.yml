@@ -73,6 +73,35 @@ jobs:
             --set backend.image.tag=${{ inputs.image_tag }} \
             --set frontend.image.tag=${{ inputs.image_tag }}
 
+      - name: Display application URL
+        run: |
+          echo "Waiting for LoadBalancer URL..."
+
+          FRONTEND_URL=""
+
+          for i in {1..30}; do
+            FRONTEND_URL=$(kubectl get svc microcrm-frontend-service \
+              -n microcrm-${{ inputs.environment }} \
+              -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+            if [ -n "$FRONTEND_URL" ]; then
+              break
+            fi
+
+            echo "LoadBalancer not ready yet... retry $i/30"
+            sleep 10
+          done
+
+          if [ -z "$FRONTEND_URL" ]; then
+            echo "LoadBalancer URL not found"
+            exit 1
+          fi
+
+          echo "Application URL: http://$FRONTEND_URL"
+          echo "### Application deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "URL: http://$FRONTEND_URL" >> $GITHUB_STEP_SUMMARY
+
       - name: Check deployment
         run: |
           kubectl get pods -n microcrm-${{ inputs.environment }}
