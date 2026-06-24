@@ -11,14 +11,10 @@ output "cluster_name" {
   value       = module.eks.cluster_name
 }
 
-output "cluster_ca_certificate" {
-  value = aws_eks_cluster.eks-cluster.certificate_authority[0].data
+output "eks_oidc_provider_arn" {
+  value = module.eks.oidc_provider_arn
 }
 
-output "oidc_provider_arn" {
-  value = aws_iam_openid_connect_provider.eks_oidc_provider.arn
-}
-
-output "oidc_provider_url" {
-  value = aws_iam_openid_connect_provider.eks_oidc_provider.url
+output "eks_oidc_provider_url" {
+  value = module.eks.oidc_provider_url
 }
