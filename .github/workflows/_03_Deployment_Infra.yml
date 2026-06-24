@@ -100,6 +100,8 @@ jobs:
         continue-on-error: true
         run: |
           helm uninstall microcrm -n microcrm-${{ inputs.environment }}
+          kubectl delete ingress --all -n microcrm-${{ inputs.environment }} --ignore-not-found=true
+          kubectl delete namespace microcrm-${{ inputs.environment }} --ignore-not-found=true
 
       - name: Delete application namespace
         if: inputs.action == 'destroy'
