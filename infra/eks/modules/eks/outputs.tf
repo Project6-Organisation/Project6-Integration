@@ -54,3 +54,7 @@ output "node_groups" {
     }
   }
 }
+
+output "oidc_provider_url" {
+  value = aws_iam_openid_connect_provider.eks_oidc_provider.url
+}
