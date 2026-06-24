@@ -22,8 +22,10 @@ frontend:
 
   replicas: 1
 
-  containerPort: 80
+  # containerPort: 80
+  containerPort: 443
 
   service:
     type: LoadBalancer
-    port: 80
+    # port: 80
+    port: 443
