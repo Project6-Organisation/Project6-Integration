@@ -1,16 +1,16 @@
-namespace: microcrm-staging
+namespace: microcrm-prod
 
 backend:
   image:
-    tag: develop-16c2d7a
+    tag: v1.6.0
   replicas: 1
 
 frontend:
   image:
-    tag: develop-16c2d7a
+    tag: v1.6.0
   replicas: 2
 
 ingress:
   enabled: true
-  host: microcrm.staging.olivierpflieger.fr
+  host: microcrm.prod.olivierpflieger.fr
   certificateArn: arn:aws:acm:us-east-1:161438779240:certificate/c8b4fae7-d109-4319-99a9-e04012885009

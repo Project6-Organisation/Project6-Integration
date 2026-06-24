@@ -22,10 +22,13 @@ frontend:
 
   replicas: 1
 
-  # containerPort: 80
-  containerPort: 443
+  containerPort: 80
 
   service:
-    type: LoadBalancer
-    # port: 80
-    port: 443
+    type: ClusterIP
+    port: 80
+
+ingress:
+  enabled: false
+  host: ""
+  certificateArn: ""
