@@ -71,7 +71,10 @@ jobs:
             --namespace microcrm-${{ inputs.environment }} \
             --create-namespace \
             --set backend.image.tag=${{ inputs.image_tag }} \
-            --set frontend.image.tag=${{ inputs.image_tag }}
+            --set frontend.image.tag=${{ inputs.image_tag }} \
+            --atomic \
+            --wait \
+            --timeout 5m
 
       - name: Display application URL
         run: |
