@@ -34,6 +34,7 @@ module "eks" {
   naming_prefix      = local.naming_prefix
   node_groups        = var.node_groups
   environment        = var.environment
+  aws_region         = var.aws_region
 }
 
 ################################################################################
