@@ -85,32 +85,37 @@ jobs:
 
       - name: Display application URL
         run: |
-          echo "Waiting for LoadBalancer URL..."
+          echo "Waiting for Ingress ALB URL..."
 
-          FRONTEND_URL=""
+          INGRESS_URL=""
 
           for i in {1..30}; do
-            FRONTEND_URL=$(kubectl get svc microcrm-frontend-service \
+            INGRESS_URL=$(kubectl get ingress microcrm-ingress \
               -n microcrm-${{ inputs.environment }} \
               -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 
-            if [ -n "$FRONTEND_URL" ]; then
+            if [ -n "$INGRESS_URL" ]; then
               break
             fi
 
-            echo "LoadBalancer not ready yet... retry $i/30"
+            echo "Ingress ALB not ready yet... retry $i/30"
             sleep 10
           done
 
-          if [ -z "$FRONTEND_URL" ]; then
-            echo "LoadBalancer URL not found"
+          if [ -z "$INGRESS_URL" ]; then
+            echo "Ingress ALB URL not found"
+            kubectl describe ingress microcrm-ingress -n microcrm-${{ inputs.environment }}
             exit 1
           fi
 
-          echo "Application URL: http://$FRONTEND_URL"
+          echo "ALB URL: https://$INGRESS_URL"
+          echo "Application URL: https://microcrm.${{ inputs.environment }}.olivierpflieger.fr"
+
           echo "### Application deployed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "URL: http://$FRONTEND_URL" >> $GITHUB_STEP_SUMMARY
+          echo "ALB URL: https://$INGRESS_URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Application URL: https://microcrm.${{ inputs.environment }}.olivierpflieger.fr" >> $GITHUB_STEP_SUMMARY
 
       - name: Check deployment
         run: |
