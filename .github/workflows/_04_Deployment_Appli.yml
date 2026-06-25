@@ -118,6 +118,7 @@ jobs:
           echo "ALB URL: https://$INGRESS_URL" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Application URL: $APP_URL" >> $GITHUB_STEP_SUMMARY
+          echo "API URL: $APP_URL/api" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "OVH domain configuration: edit DNS record (CNAME)" >> $GITHUB_STEP_SUMMARY
           echo "microcrm.${{ inputs.environment }} => $INGRESS_URL." >> $GITHUB_STEP_SUMMARY
