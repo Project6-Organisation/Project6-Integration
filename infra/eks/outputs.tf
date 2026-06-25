@@ -22,3 +22,7 @@ output "eks_oidc_provider_url" {
 output "aws_load_balancer_controller_role_arn" {
   value = module.eks.aws_load_balancer_controller_role_arn
 }
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
