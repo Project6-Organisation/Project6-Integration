@@ -2,7 +2,7 @@ name: Docker build and push artifacts on Github package registry
 
 on:
   workflow_call:
-  outputs:
+    outputs:
       image_tag:
         value: ${{ jobs.Semantic_Release.outputs.image_tag }}      
     
