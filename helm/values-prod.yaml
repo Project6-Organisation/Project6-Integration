@@ -12,5 +12,5 @@ frontend:
 
 ingress:
   enabled: true
-  host: microcrm.prod.olivierpflieger.fr
+  host: microcrm.prod
   certificateArn: arn:aws:acm:us-east-1:161438779240:certificate/c8b4fae7-d109-4319-99a9-e04012885009

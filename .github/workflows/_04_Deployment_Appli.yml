@@ -32,6 +32,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+      BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
     steps:
 
@@ -79,6 +80,7 @@ jobs:
             --create-namespace \
             --set backend.image.tag=${{ inputs.image_tag }} \
             --set frontend.image.tag=${{ inputs.image_tag }} \
+            --set ingress.baseDomain=$BASE_DOMAIN \
             --atomic \
             --wait \
             --timeout 5m
@@ -109,13 +111,16 @@ jobs:
           fi
 
           echo "ALB URL: https://$INGRESS_URL"
-          echo "Application URL: https://microcrm.${{ inputs.environment }}.olivierpflieger.fr"
-
+          APP_URL="https://microcrm.${{ inputs.environment }}.$BASE_DOMAIN"
+          echo "Application URL: $APP_URL"
           echo "### Application deployed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "ALB URL: https://$INGRESS_URL" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Application URL: https://microcrm.${{ inputs.environment }}.olivierpflieger.fr" >> $GITHUB_STEP_SUMMARY
+          echo "Application URL: $APP_URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "OVH domain configuration: edit DNS record (CNAME)" >> $GITHUB_STEP_SUMMARY
+          echo "microcrm.${{ inputs.environment }} => $INGRESS_URL." >> $GITHUB_STEP_SUMMARY
 
       - name: Check deployment
         run: |

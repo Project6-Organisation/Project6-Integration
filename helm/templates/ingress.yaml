@@ -19,7 +19,7 @@ spec:
   ingressClassName: alb
 
   rules:
-    - host: {{ .Values.ingress.host }}
+    - host: {{ .Values.ingress.host }}.{{ .Values.ingress.baseDomain }}
       http:
         paths:
           - path: /

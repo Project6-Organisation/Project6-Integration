@@ -21,7 +21,40 @@ permissions:
   contents: read
 
 jobs:
+
+  Check-variables:
+    
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
+    
+    steps:      
+      
+      - name: Check action
+        run: |
+          echo "Action: ${{ inputs.action }}"
+          if [ "${{ inputs.action }}" != "plan" ] \
+            && [ "${{ inputs.action }}" != "apply" ] \
+            && [ "${{ inputs.action }}" != "plan-destroy" ] \
+            && [ "${{ inputs.action }}" != "destroy" ]; then
+            echo "Invalid action: ${{ inputs.action }}"
+            echo "Allowed values: plan, apply, plan-destroy, destroy"
+            exit 1
+          fi
+
+      - name: Check environment
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          if [ "${{ inputs.environment }}" != "staging" ] && [ "${{ inputs.environment }}" != "prod" ]; then
+            echo "Invalid environment: ${{ inputs.environment }}"
+            echo "Allowed values: staging, prod"
+            exit 1
+          fi
+
   create-infra:
+
+    needs: Check-variables
+    if: inputs.action == 'plan' || inputs.action == 'apply'
+
     runs-on: [self-hosted, project6]
 
     env:
@@ -41,25 +74,7 @@ jobs:
         with:
           repository: Project6-Organisation/Project6-Integration
           path: integration
-
-      - name: Check action
-        run: |
-          echo "Action: ${{ inputs.action }}"
-          if [ "${{ inputs.action }}" != "plan" ] && [ "${{ inputs.action }}" != "apply" ] && [ "${{ inputs.action }}" != "destroy" ]; then
-            echo "Invalid action: ${{ inputs.action }}"
-            echo "Allowed values: plan, apply, destroy"
-            exit 1
-          fi
-
-      - name: Check environment
-        run: |
-          echo "Environment: ${{ inputs.environment }}"
-          if [ "${{ inputs.environment }}" != "staging" ] && [ "${{ inputs.environment }}" != "prod" ]; then
-            echo "Invalid environment: ${{ inputs.environment }}"
-            echo "Allowed values: staging, prod"
-            exit 1
-          fi
-
+      
       - name: Create bucket if not exists
         run: |
           aws s3api head-bucket \
@@ -85,49 +100,9 @@ jobs:
       - name: Terraform apply
         if: inputs.action == 'apply'
         run: terraform apply -auto-approve tfplan
-
-      #  Destoy section
-      - name: Configure kubeconfig before cleanup
-        if: inputs.action == 'destroy'
-        #  Continue on error to avoid failing the workflow if the kubeconfig cannot be configured 
-        #  (e.g., if the cluster is already deleted)
-        continue-on-error: true
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name project6-eks-${{ inputs.environment }}
-
-      - name: Uninstall Helm release
-        if: inputs.action == 'destroy'
-        continue-on-error: true
-        run: |
-          helm uninstall microcrm -n microcrm-${{ inputs.environment }}
-
-          watch -n 10 '
-          aws elbv2 describe-load-balancers \
-          --region us-east-1 \
-          --query "LoadBalancers[*].[DNSName,State.Code]" \
-          --output table'
-
-          kubectl delete ingress --all -n microcrm-${{ inputs.environment }} --ignore-not-found=true
-          kubectl delete namespace microcrm-${{ inputs.environment }} --ignore-not-found=true
-
-      - name: Delete application namespace
-        if: inputs.action == 'destroy'
-        continue-on-error: true
-        run: |
-          kubectl delete namespace microcrm-${{ inputs.environment }} --ignore-not-found=true
-
-      - name: Wait for LoadBalancer cleanup
-        if: inputs.action == 'destroy'
-        continue-on-error: true
-        run: |
-          echo "Waiting for AWS LoadBalancer resources cleanup..."
-          sleep 90
-
-      - name: Terraform destroy
-        if: inputs.action == 'destroy'
-        run: terraform destroy -var-file="envs/${{ inputs.environment }}.tfvars" -auto-approve
-
+      
   deploy-addons:
+
     needs: create-infra
     if: inputs.action == 'apply'
 
@@ -193,3 +168,138 @@ jobs:
         run: |
           kubectl get deployment -n kube-system aws-load-balancer-controller
           kubectl get pods -n kube-system | grep aws-load-balancer-controller
+
+  plan-destroy:
+
+    needs: Check-variables
+    if: inputs.action == 'plan-destroy'
+
+    runs-on: [self-hosted, project6]
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+
+    defaults:
+      run:
+        working-directory: integration/infra/eks
+
+    steps:
+      - name: Checkout integration repository
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="key=eks/${{ inputs.environment }}/terraform.tfstate"
+
+      - name: Terraform destroy plan
+        run: |
+          terraform plan \
+            -destroy \
+            -var-file="envs/${{ inputs.environment }}.tfvars" \
+            -out=destroy.tfplan
+
+      - name: Show destroy summary
+        run: |
+          echo "## Destroy plan" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          terraform show -no-color destroy.tfplan > destroy.txt
+
+          DESTROY_COUNT=$(grep -c "^  #" destroy.txt || true)
+
+          echo "Resources to destroy: **$DESTROY_COUNT**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep "^  #" destroy.txt >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+  
+  cleanup-addons:
+
+    needs: Check-variables
+    if: inputs.action == 'destroy'
+
+    runs-on: [self-hosted, project6]
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+
+    steps:
+      - name: Configure kubeconfig
+        continue-on-error: true
+        run: |
+          aws eks update-kubeconfig \
+            --region $AWS_REGION \
+            --name project6-eks-${{ inputs.environment }}
+
+      - name: Uninstall application Helm release
+        continue-on-error: true
+        run: |
+          helm uninstall microcrm -n microcrm-${{ inputs.environment }} || true
+
+      - name: Delete application namespace
+        continue-on-error: true
+        run: |
+          kubectl delete namespace microcrm-${{ inputs.environment }} \
+            --ignore-not-found=true
+
+      - name: Wait for AWS LoadBalancer cleanup
+        run: |
+          echo "Waiting for LoadBalancer cleanup..."
+          sleep 120
+
+          aws elbv2 describe-load-balancers \
+            --region $AWS_REGION \
+            --query "LoadBalancers[*].[LoadBalancerName,DNSName,State.Code]" \
+            --output table || true
+
+      - name: Uninstall AWS Load Balancer Controller
+        continue-on-error: true
+        run: |
+          helm uninstall aws-load-balancer-controller \
+            -n kube-system || true
+
+  destroy-infra:
+
+    needs: cleanup-addons
+    if: inputs.action == 'destroy'
+
+    runs-on: [self-hosted, project6]
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+
+    defaults:
+      run:
+        working-directory: integration/infra/eks
+
+    steps:
+      - name: Checkout integration repository
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="key=eks/${{ inputs.environment }}/terraform.tfstate"
+
+      - name: Terraform destroy
+        run: |
+          terraform destroy \
+            -var-file="envs/${{ inputs.environment }}.tfvars" \
+            -auto-approve
