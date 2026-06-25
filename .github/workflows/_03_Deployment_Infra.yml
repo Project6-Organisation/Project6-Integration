@@ -71,11 +71,7 @@ jobs:
         run: |
           terraform init \
             -backend-config="key=eks/${{ inputs.environment }}/terraform.tfstate"
-
-      - name: Remove ALB Controller Helm release from Terraform state
-        run: |
-          terraform state rm module.eks.helm_release.aws_load_balancer_controller || true
-
+      
       - name: Terraform format
         run: terraform fmt
 
