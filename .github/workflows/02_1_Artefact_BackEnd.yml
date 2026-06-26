@@ -19,8 +19,8 @@ permissions:
 jobs:
   BackEnd_docker_Build:
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     defaults:
       run:

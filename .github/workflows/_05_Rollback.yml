@@ -22,7 +22,9 @@ permissions:
 
 jobs:
   rollback:
-    runs-on: [self-hosted, project6]
+    
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
