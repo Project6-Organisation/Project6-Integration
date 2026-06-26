@@ -93,8 +93,8 @@ jobs:
 
   BackEnd_SonarQube:
     # Desactivation temporaire du build
-    #if: |
-    #  github.ref_name == 'develop'
+    if: |
+     github.ref_name == 'develop'
     # if: false
     # End desactivation temporaire du build
     needs:
@@ -122,8 +122,8 @@ jobs:
 
   FrontEnd_SonarQube:
     # Desactivation temporaire du build
-    # if: |
-    #   github.ref_name == 'develop'
+    if: |
+      github.ref_name == 'develop'
     # if: false
     # End desactivation temporaire du build
     needs:
