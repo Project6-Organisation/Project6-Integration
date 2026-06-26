@@ -24,8 +24,8 @@ permissions:
 jobs:
   deploy-helm:
     
-    # runs-on: [self-hosted, project6]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
 
     environment: ${{ inputs.environment }}
 

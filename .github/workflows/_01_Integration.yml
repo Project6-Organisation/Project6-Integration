@@ -21,8 +21,8 @@ permissions:
 jobs:
   Check-variables:
     
-    # runs-on: [self-hosted, project6]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
     
     steps:      
       
@@ -66,7 +66,7 @@ jobs:
 
   BackEnd_Build:
     # Desactivation temporaire du build
-    # if: false
+    if: false
     # End desactivation temporaire du build
     needs:
       - Check-variables
@@ -75,7 +75,7 @@ jobs:
     
   BackEnd_Test:
     # Desactivation temporaire du build
-    # if: false
+    if: false
     # End desactivation temporaire du build
     needs:
       - BackEnd_Build
@@ -84,9 +84,9 @@ jobs:
 
   BackEnd_SonarQube:
     # Desactivation temporaire du build
-    if: |
-     github.ref_name == 'develop'
-    # if: false
+    # if: |
+    # github.ref_name == 'develop'
+    if: false
     # End desactivation temporaire du build
     needs:
       - BackEnd_Test
@@ -95,7 +95,7 @@ jobs:
     
   FrontEnd_Build:
     # Desactivation temporaire du build
-    # if: false
+    if: false
     # End desactivation temporaire du build
     needs:
       - Check-variables
@@ -104,7 +104,7 @@ jobs:
 
   FrontEnd_Test:
     # Desactivation temporaire du build
-    # if: false
+    if: false
     # End desactivation temporaire du build
     needs:
       - FrontEnd_Build
@@ -113,9 +113,9 @@ jobs:
 
   FrontEnd_SonarQube:
     # Desactivation temporaire du build
-    if: |
-      github.ref_name == 'develop'
-    # if: false
+    #if: |
+    #  github.ref_name == 'develop'
+    if: false
     # End desactivation temporaire du build
     needs:
       - FrontEnd_Test
@@ -124,7 +124,7 @@ jobs:
 
   Snyk_Scan:
     # Desactivation temporaire du build
-    # if: false
+    if: false
     # End desactivation temporaire du build
     needs:
       - BackEnd_Build
@@ -135,8 +135,8 @@ jobs:
   CI_Status:
     name: CI Status
     
-    # runs-on: [self-hosted, project6]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
 
     needs:
       - BackEnd_Build
