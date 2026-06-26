@@ -14,4 +14,4 @@ ingress:
   enabled: true
   host: microcrm.prod
   apiHost: microcrm-api.prod
-  certificateArn: arn:aws:acm:us-east-1:161438779240:certificate/c8b4fae7-d109-4319-99a9-e04012885009
+  certificateArn: arn:aws:acm:us-east-1:161438779240:certificate/6a892dd9-ad2b-4586-ace3-e7d386898faf
