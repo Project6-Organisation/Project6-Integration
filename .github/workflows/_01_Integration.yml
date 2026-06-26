@@ -75,7 +75,7 @@ jobs:
 
   BackEnd_Build:
     # Desactivation temporaire du build
-    if: false
+    # if: false
     # End desactivation temporaire du build
     needs:
       - Check-variables
@@ -84,7 +84,7 @@ jobs:
     
   BackEnd_Test:
     # Desactivation temporaire du build
-    if: false
+    # if: false
     # End desactivation temporaire du build
     needs:
       - BackEnd_Build
@@ -95,7 +95,7 @@ jobs:
     # Desactivation temporaire du build
     #if: |
     #  github.ref_name == 'develop'
-    if: false
+    # if: false
     # End desactivation temporaire du build
     needs:
       - BackEnd_Test
@@ -104,7 +104,7 @@ jobs:
     
   FrontEnd_Build:
     # Desactivation temporaire du build
-    if: false
+    # if: false
     # End desactivation temporaire du build
     needs:
       - Check-variables
@@ -113,7 +113,7 @@ jobs:
 
   FrontEnd_Test:
     # Desactivation temporaire du build
-    if: false
+    # if: false
     # End desactivation temporaire du build
     needs:
       - FrontEnd_Build
@@ -124,7 +124,7 @@ jobs:
     # Desactivation temporaire du build
     # if: |
     #   github.ref_name == 'develop'
-    if: false
+    # if: false
     # End desactivation temporaire du build
     needs:
       - FrontEnd_Test
@@ -133,7 +133,7 @@ jobs:
 
   Snyk_Scan:
     # Desactivation temporaire du build
-    if: false
+    # if: false
     # End desactivation temporaire du build
     needs:
       - BackEnd_Build
