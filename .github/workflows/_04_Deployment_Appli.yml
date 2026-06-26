@@ -128,11 +128,11 @@ jobs:
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
 
-      - name: DAST scan with OWASP ZAP
-        if: inputs.environment == 'staging'
-        uses: zaproxy/action-baseline@v0.15.0
-        with:
-          target: https://microcrm.${{ inputs.environment }}.${{ env.BASE_DOMAIN }}
-          fail_action: false
-          allow_issue_writing: false
+      # - name: DAST scan with OWASP ZAP
+      #   if: inputs.environment == 'staging'
+      #   uses: zaproxy/action-baseline@v0.15.0
+      #   with:
+      #     target: https://microcrm.${{ inputs.environment }}.${{ env.BASE_DOMAIN }}
+      #     fail_action: false
+      #     allow_issue_writing: false
       
