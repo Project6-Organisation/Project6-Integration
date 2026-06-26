@@ -2,6 +2,10 @@ name: Docker build and push artifacts on Github package registry
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
     outputs:
       image_tag:
         value: ${{ jobs.Semantic_Release.outputs.image_tag }}      
@@ -18,7 +22,7 @@ jobs:
     
     # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
-    
+        
     steps:      
             
       - name: Show caller & called workflow branch
@@ -29,12 +33,13 @@ jobs:
           echo "github.base_ref: ${{ github.base_ref }}"
           echo "github.head_ref: ${{ github.head_ref }}"
 
-          if [ "${{ inputs.origin }}" == "manual-trigger" ]; then
-            echo "Caller branch: ${{ github.ref_name }}"
-            echo "Called pipeline branch: develop"
-          else
-            echo "Caller branch: ${{ github.ref_name }}"
-            echo "Called pipeline branch: main"
+      - name: Check environment
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          if [ "${{ inputs.environment }}" != "staging" ] && [ "${{ inputs.environment }}" != "prod" ]; then
+            echo "Invalid environment: ${{ inputs.environment }}"
+            echo "Allowed values: staging, prod"
+            exit 1
           fi
   
   Semantic_Release:
@@ -162,27 +167,139 @@ jobs:
       #     git commit -m "chore(release): ${{ steps.semantic-release.outputs.new_release_version }} [skip ci]"
 
       #     git push
-
-  BackEnd_Docker_Build:
-    
-    needs:
-      - Semantic_Release
-    
-    uses: ./.github/workflows/02_1_Artefact_BackEnd.yml
-    
-    with:
-      image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}
-      is_release: ${{ needs.Semantic_Release.outputs.is_release }}
-    secrets: inherit
-    
-  FrontEnd_Docker_Build:
+  
+  Docker_Build_BackEnd:
 
     needs:
       - Semantic_Release
+
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./back
+        
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assign and display image name
+        run: |
+          echo "inputs.image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}"
+          echo "inputs.is_release: ${{ needs.Semantic_Release.outputs.is_release }}"
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/backend" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ needs.Semantic_Release.outputs.image_tag }}" >> $GITHUB_ENV
+            
+      - name: Login to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+            -u "${{ github.actor }}" \
+            --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t "$IMAGE_NAME:$IMAGE_TAG" \
+            -t "$IMAGE_NAME:latest" \
+            .
+
+      # - name: Scan Backend image with Trivy
+      #   uses: aquasecurity/trivy-action@0.35.0
+      #   with:
+      #     image-ref: '${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}'
+      #     format: table
+      #     exit-code: '1'
+      #     output: 'back-trivy-results.txt'
+      #     ignore-unfixed: true
+      #     vuln-type: 'os,library'
+      #     severity: 'CRITICAL,HIGH'
+
+      # - name: Upload Trivy scan results as artifact
+      #   uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #     name: back-trivy-results
+      #     path: back-trivy-results.txt
+      #     retention-days: 1
+
+      - name: Push Docker image
+        run: |
+          docker push "$IMAGE_NAME:$IMAGE_TAG"
+          docker push "$IMAGE_NAME:latest"
+
+      - name: Show pushed image
+        run: |
+          echo "Pushed image: $IMAGE_NAME:$IMAGE_TAG"
+          echo "Pushed image: $IMAGE_NAME:latest"
+  
+  Docker_Build_FrontEnd:
+
+    needs:
+      - Semantic_Release
     
-    uses: ./.github/workflows/02_2_Artefact_FrontEnd.yml
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
+
+    environment: ${{ inputs.environment }}
+
+    env:
+      BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
+
+    defaults:
+      run:
+        working-directory: ./front
     
-    with:
-      image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}
-      is_release: ${{ needs.Semantic_Release.outputs.is_release }}
-    secrets: inherit
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Assign and display image name
+        run: |
+          echo "inputs.image_tag: ${{ needs.Semantic_Release.outputs.image_tag }}"
+          echo "inputs.is_release: ${{ needs.Semantic_Release.outputs.is_release }}"
+          
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/frontend" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ needs.Semantic_Release.outputs.image_tag }}" >> $GITHUB_ENV
+          echo "API_BASE_URL=https://microcrm-api.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}" >> $GITHUB_ENV
+      
+      - name: Login to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+            -u "${{ github.actor }}" \
+            --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg API_BASE_URL="$API_BASE_URL" \
+            -t "$IMAGE_NAME:$IMAGE_TAG" \
+            -t "$IMAGE_NAME:latest" \
+            .
+
+      # - name: Scan Frontend image with Trivy
+      #   uses: aquasecurity/trivy-action@0.35.0
+      #   with:
+      #     image-ref: '${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}'
+      #     format: table
+      #     exit-code: '1'
+      #     output: 'front-trivy-results.txt'
+      #     ignore-unfixed: true
+      #     vuln-type: 'os,library'
+      #     severity: 'CRITICAL,HIGH'
+
+      # - name: Upload Trivy scan results as artifact
+      #   uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #     name: front-trivy-results
+      #     path: front-trivy-results.txt
+      #     retention-days: 1
+
+      - name: Push Docker image
+        run: |
+          docker push "$IMAGE_NAME:$IMAGE_TAG"
+          docker push "$IMAGE_NAME:latest"
+
+      - name: Show pushed image
+        run: |
+          echo "Pushed image: $IMAGE_NAME:$IMAGE_TAG"
+          echo "Pushed image: $IMAGE_NAME:latest"

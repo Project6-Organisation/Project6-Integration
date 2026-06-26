@@ -31,5 +31,6 @@ frontend:
 ingress:
   enabled: false
   host: ""
+  apiHost: ""
   baseDomain: ""
   certificateArn: ""

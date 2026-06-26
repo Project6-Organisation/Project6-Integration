@@ -10,11 +10,7 @@ on:
         SNYK_TOKEN:
           required: false
         SNYK_ORG_ID:
-          required: false
-    inputs:
-      origin:
-        required: false
-        type: string
+          required: false    
 
 permissions:
   contents: write
@@ -37,14 +33,9 @@ jobs:
 
           echo "github.base_ref: ${{ github.base_ref }}"
           echo "github.head_ref: ${{ github.head_ref }}"
-
-          if [ "${{ inputs.origin }}" == "manual-trigger" ]; then
-            echo "Caller branch: ${{ github.ref_name }}"
-            echo "Called pipeline branch: develop"
-          else
-            echo "Caller branch: ${{ github.ref_name }}"
-            echo "Called pipeline branch: main"
-          fi
+         
+          echo "Caller branch: ${{ github.ref_name }}"
+          echo "Called pipeline branch: main"
 
       - name: Check SonarQube token
         env:
