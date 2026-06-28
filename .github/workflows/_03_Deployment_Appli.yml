@@ -137,4 +137,25 @@ jobs:
       #     target: https://microcrm.${{ inputs.environment }}.${{ env.BASE_DOMAIN }}
       #     fail_action: false
       #     allow_issue_writing: false
-      
+
+  zap_scan:
+  
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
+
+    name: Scan the FrontEnd application with OWASP ZAP
+
+    needs: deploy-helm
+
+    if: inputs.environment == 'staging'
+  
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.13.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: ${{ env.APP_URL }}      
