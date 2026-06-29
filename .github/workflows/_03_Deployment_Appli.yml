@@ -33,9 +33,19 @@ jobs:
 
     environment: ${{ inputs.environment }}
 
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Configure kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name project6-eks-${{ inputs.environment }}
 
       - name: Add Helm repositories
         run: |
@@ -190,32 +200,37 @@ jobs:
       - name: Send DORA deployment event to Loki
         if: always()
         run: |
-          kubectl run dora-sender-${{ github.run_id }} \
-            --rm -i --restart=Never \
-            --image=curlimages/curl:latest \
-            --namespace=monitoring \
-            --command -- sh -c '
-              curl -X POST "http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push" \
-                -H "Content-Type: application/json" \
-                -d "{
-                  \"streams\": [
-                    {
-                      \"stream\": {
-                        \"job\": \"github-actions\",
-                        \"type\": \"dora\",
-                        \"environment\": \"${{ inputs.environment }}\",
-                        \"repository\": \"${{ github.repository }}\"
-                      },
-                      \"values\": [
-                        [
-                          \"$(date +%s%N)\",
-                          \"deployment run_id=${{ github.run_id }} status=${{ job.status }} sha=${{ github.sha }} workflow=${{ github.workflow }}\"
-                        ]
-                      ]
-                    }
+          echo "Available Loki services:"
+          kubectl get svc -n monitoring
+
+          kubectl port-forward -n monitoring svc/loki 3100:3100 > /tmp/loki-port-forward.log 2>&1 &
+          PF_PID=$!
+
+          sleep 10
+
+          curl -v -X POST "http://localhost:3100/loki/api/v1/push" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"streams\": [
+                {
+                  \"stream\": {
+                    \"job\": \"github-actions\",
+                    \"type\": \"dora\",
+                    \"environment\": \"${{ inputs.environment }}\",
+                    \"repository\": \"${{ github.repository }}\",
+                    \"workflow\": \"${{ github.workflow }}\"
+                  },
+                  \"values\": [
+                    [
+                      \"$(date +%s%N)\",
+                      \"deployment run_id=${{ github.run_id }} status=${{ job.status }} sha=${{ github.sha }} image_tag=${{ inputs.image_tag }}\"
+                    ]
                   ]
-                }"
-            '
+                }
+              ]
+            }"
+
+          kill $PF_PID || true
 
   zap_scan-BackEnd:
   
