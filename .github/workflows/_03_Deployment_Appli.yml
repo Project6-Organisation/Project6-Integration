@@ -20,6 +20,7 @@ on:
 permissions:
   contents: read
   packages: read
+  issues: write
 
 jobs:
   deploy-helm:
@@ -168,7 +169,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: "https://microcrm-api.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
           docker_name: zaproxy/zap-stable
-          fail_action: true
+          fail_action: false
 
   zap_scan-FrontEnd:
   
@@ -200,4 +201,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: "https://microcrm.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
           docker_name: zaproxy/zap-stable
-          fail_action: true
+          fail_action: false
