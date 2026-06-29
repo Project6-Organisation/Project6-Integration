@@ -77,10 +77,17 @@ jobs:
 
       - name: Install Prometheus and Grafana
         run: |
+          kubectl delete job monitoring-kube-prometheus-admission-create -n monitoring --ignore-not-found=true
+
+          kubectl delete job monitoring-kube-prometheus-admission-patch -n monitoring --ignore-not-found=true
+
           helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
             --namespace monitoring \
             --set grafana.enabled=true \
-            --set grafana.adminPassword=admin
+            --set grafana.adminPassword=admin \
+            --set prometheusOperator.admissionWebhooks.enabled=false \
+            --wait \
+            --timeout 10m
 
       - name: Check monitoring
         run: |
