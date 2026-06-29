@@ -23,7 +23,53 @@ permissions:
   issues: write
 
 jobs:
+  
+  deploy-monitoring:
+
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
+    
+    name: Deploy Monitoring Stack
+
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add Helm repositories
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+
+      - name: Create monitoring namespace
+        run: |
+          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Install Loki
+        run: |
+          helm upgrade --install loki grafana/loki \
+            --namespace monitoring \
+            --set deploymentMode=SingleBinary \
+            --set loki.auth_enabled=false \
+            --set singleBinary.replicas=1
+
+      - name: Install Prometheus and Grafana
+        run: |
+          helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+            --namespace monitoring \
+            --set grafana.enabled=true \
+            --set grafana.adminPassword=admin
+
+      - name: Check monitoring
+        run: |
+          kubectl get pods -n monitoring
+          kubectl get svc -n monitoring
+
   deploy-helm:
+
+    needs: deploy-monitoring
     
     runs-on: [self-hosted, project6]
     # runs-on: ubuntu-latest
@@ -130,7 +176,37 @@ jobs:
         run: |
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
-      
+
+      - name: Send DORA deployment event to Loki
+        if: always()
+        run: |
+          kubectl run dora-sender-${{ github.run_id }} \
+            --rm -i --restart=Never \
+            --image=curlimages/curl:latest \
+            --namespace=monitoring \
+            --command -- sh -c '
+              curl -X POST "http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push" \
+                -H "Content-Type: application/json" \
+                -d "{
+                  \"streams\": [
+                    {
+                      \"stream\": {
+                        \"job\": \"github-actions\",
+                        \"type\": \"dora\",
+                        \"environment\": \"${{ inputs.environment }}\",
+                        \"repository\": \"${{ github.repository }}\"
+                      },
+                      \"values\": [
+                        [
+                          \"$(date +%s%N)\",
+                          \"deployment run_id=${{ github.run_id }} status=${{ job.status }} sha=${{ github.sha }} workflow=${{ github.workflow }}\"
+                        ]
+                      ]
+                    }
+                  ]
+                }"
+            '
+
   zap_scan-BackEnd:
   
     runs-on: [self-hosted, project6]
