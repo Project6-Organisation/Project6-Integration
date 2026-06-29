@@ -157,8 +157,7 @@ jobs:
   #       with:          
   #         target: ${{ env.APP_URL }}
   #         artifact_name: zap_report          
-          
-
+  
   zap_scan:
   
     # runs-on: [self-hosted, project6]
@@ -171,6 +170,11 @@ jobs:
     if: inputs.environment == 'staging'
   
     steps:
+
+      - name: Show URL to scan
+        run: |
+          echo "URL to scan : ${{ env.APP_URL }}"
+
       - name: Checkout
         uses: actions/checkout@v4        
       - name: ZAP Scan
