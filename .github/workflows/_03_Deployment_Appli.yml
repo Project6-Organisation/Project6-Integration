@@ -142,10 +142,15 @@ jobs:
   
     # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
-
+    
     name: Scan the FrontEnd application with OWASP ZAP
 
     needs: deploy-helm
+
+    environment: ${{ inputs.environment }}
+
+    env:
+      BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
     if: inputs.environment == 'staging'
   
@@ -153,7 +158,7 @@ jobs:
 
       - name: Show URL to scan
         run: |
-          echo "URL to scan : APP_URL="https://microcrm.${{ inputs.environment }}.$BASE_DOMAIN""
+          echo "URL to scan : https://microcrm.${{ inputs.environment }}.$BASE_DOMAIN"
 
       - name: Checkout
         uses: actions/checkout@v4        
@@ -161,5 +166,5 @@ jobs:
         uses: zaproxy/action-full-scan@v0.13.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: APP_URL="https://microcrm.${{ inputs.environment }}.$BASE_DOMAIN"
+          target: "https://microcrm.${{ inputs.environment }}.$BASE_DOMAIN"
           docker_name: zaproxy/zap-stable
