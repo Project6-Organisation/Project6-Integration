@@ -138,7 +138,39 @@ jobs:
       #     fail_action: false
       #     allow_issue_writing: false
   
-  zap_scan:
+  zap_scan-BackEnd:
+  
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
+    
+    name: Scan the BackEnd application with OWASP ZAP
+
+    needs: deploy-helm
+
+    environment: ${{ inputs.environment }}
+
+    env:
+      BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
+
+    if: inputs.environment == 'staging'
+  
+    steps:
+
+      - name: Show URL to scan
+        run: |
+          echo "URL to scan : https://microcrm-api.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.13.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: "https://microcrm-api.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
+          docker_name: zaproxy/zap-stable
+          fail_action: true
+
+  zap_scan-FrontEnd:
   
     # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
@@ -168,3 +200,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: "https://microcrm.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
           docker_name: zaproxy/zap-stable
+          fail_action: true
