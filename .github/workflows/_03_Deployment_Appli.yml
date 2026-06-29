@@ -151,11 +151,9 @@ jobs:
   
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: master
+        uses: actions/checkout@v4        
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: ${{ env.APP_URL }}      
+          target: ${{ env.APP_URL }}
