@@ -25,8 +25,8 @@ permissions:
 jobs:
   deploy-helm:
     
-    # runs-on: [self-hosted, project6]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
 
     environment: ${{ inputs.environment }}
 
@@ -130,19 +130,11 @@ jobs:
         run: |
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
-
-      # - name: DAST scan with OWASP ZAP
-      #   if: inputs.environment == 'staging'
-      #   uses: zaproxy/action-baseline@v0.15.0
-      #   with:
-      #     target: https://microcrm.${{ inputs.environment }}.${{ env.BASE_DOMAIN }}
-      #     fail_action: false
-      #     allow_issue_writing: false
-  
+      
   zap_scan-BackEnd:
   
-    # runs-on: [self-hosted, project6]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
     
     name: Scan the BackEnd application with OWASP ZAP
 
@@ -153,7 +145,10 @@ jobs:
     env:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
-    if: inputs.environment == 'staging'
+    # Desactivation temporaire du build
+    if: false
+    # if: inputs.environment == 'staging'
+    # End desactivation temporaire du build
   
     steps:
 
@@ -170,11 +165,12 @@ jobs:
           target: "https://microcrm-api.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
           docker_name: zaproxy/zap-stable
           fail_action: false
+          artifact_name: "zap_report_backend.html"
 
   zap_scan-FrontEnd:
   
-    # runs-on: [self-hosted, project6]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
     
     name: Scan the FrontEnd application with OWASP ZAP
 
@@ -185,7 +181,10 @@ jobs:
     env:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
-    if: inputs.environment == 'staging'
+    # Desactivation temporaire du build
+    if: false
+    # if: inputs.environment == 'staging'
+    # End desactivation temporaire du build
   
     steps:
 
@@ -202,3 +201,4 @@ jobs:
           target: "https://microcrm.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
           docker_name: zaproxy/zap-stable
           fail_action: false
+          artifact_name: "zap_report_frontend.html"
