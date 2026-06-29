@@ -4,7 +4,7 @@ aws_region    = "us-east-1"
 
 cluster_config = {
   name    = "project6-eks-staging"
-  version = "1.32"
+  version = "1.35"
 }
 
 common_tags = {
