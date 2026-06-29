@@ -43,6 +43,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Checkout integration repository
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+
       - name: Configure kubeconfig for EKS
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name project6-eks-${{ inputs.environment }}
@@ -61,33 +67,13 @@ jobs:
         run: |
           helm upgrade --install loki grafana/loki \
             --namespace monitoring \
-            --set deploymentMode=SingleBinary \
-            --set loki.auth_enabled=false \
-            --set loki.commonConfig.replication_factor=1 \
-            --set loki.useTestSchema=true \
-            --set loki.storage.type=s3 \
-            --set loki.storage.bucketNames.chunks="project6-terraform-loki-staging-230620261146" \
-            --set loki.storage.bucketNames.ruler="project6-terraform-loki-staging-230620261146" \
-            --set loki.storage.bucketNames.admin="project6-terraform-loki-staging-230620261146" \
-            --set loki.storage.s3.region="us-east-1" \
-            --set singleBinary.replicas=1 \
-            --set read.replicas=0 \
-            --set write.replicas=0 \
-            --set backend.replicas=0
+            -f integration/helm/monitoring/loki-values.yaml
 
-      - name: Install Prometheus and Grafana
+      - name: Install Prometheus/Grafana
         run: |
-          kubectl delete job monitoring-kube-prometheus-admission-create -n monitoring --ignore-not-found=true
-
-          kubectl delete job monitoring-kube-prometheus-admission-patch -n monitoring --ignore-not-found=true
-
           helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
             --namespace monitoring \
-            --set grafana.enabled=true \
-            --set grafana.adminPassword=admin \
-            --set prometheusOperator.admissionWebhooks.enabled=false \
-            --wait \
-            --timeout 10m
+            -f integration/helm/monitoring/monitoring-${{ inputs.environment }}.yaml
 
       - name: Check monitoring
         run: |

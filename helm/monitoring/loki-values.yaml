@@ -1,0 +1,32 @@
+deploymentMode: SingleBinary
+
+loki:
+  auth_enabled: false
+
+  useTestSchema: true
+
+  commonConfig:
+    replication_factor: 1
+
+  storage:
+    type: s3
+
+    bucketNames:
+      chunks: project6-terraform-loki-staging-230620261146
+      ruler: project6-terraform-loki-staging-230620261146
+      admin: project6-terraform-loki-staging-230620261146
+
+    s3:
+      region: us-east-1
+
+singleBinary:
+  replicas: 1
+
+read:
+  replicas: 0
+
+write:
+  replicas: 0
+
+backend:
+  replicas: 0

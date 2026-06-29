@@ -14,4 +14,4 @@ ingress:
   enabled: true
   host: microcrm.staging
   apiHost: microcrm-api.staging
-  certificateArn: arn:aws:acm:us-east-1:161438779240:certificate/6a892dd9-ad2b-4586-ace3-e7d386898faf
+  certificateArn: arn:aws:acm:us-east-1:161438779240:certificate/af9ef7c4-5e92-4323-a81d-b19f549d7e4b
