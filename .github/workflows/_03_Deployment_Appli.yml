@@ -53,7 +53,16 @@ jobs:
             --namespace monitoring \
             --set deploymentMode=SingleBinary \
             --set loki.auth_enabled=false \
-            --set singleBinary.replicas=1
+            --set loki.commonConfig.replication_factor=1 \
+            --set loki.storage.type=s3 \
+            --set loki.storage.bucketNames.chunks="project6-terraform-loki-${{ inputs.environment }}-230620261146" \
+            --set loki.storage.bucketNames.ruler="project6-terraform-loki-${{ inputs.environment }}-230620261146" \
+            --set loki.storage.bucketNames.admin="project6-terraform-loki-${{ inputs.environment }}-230620261146" \
+            --set loki.storage.s3.region="${{ vars.AWS_REGION }}" \
+            --set singleBinary.replicas=1 \
+            --set read.replicas=0 \
+            --set write.replicas=0 \
+            --set backend.replicas=0
 
       - name: Install Prometheus and Grafana
         run: |
