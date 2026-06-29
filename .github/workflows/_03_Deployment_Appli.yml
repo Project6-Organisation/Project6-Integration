@@ -146,7 +146,12 @@ jobs:
     name: Scan the FrontEnd application with OWASP ZAP
 
     needs: deploy-helm
-    
+
+    environment: ${{ inputs.environment }}
+
+    env:
+      BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
+
     if: inputs.environment == 'staging'
   
     steps:
