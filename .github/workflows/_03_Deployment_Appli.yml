@@ -54,11 +54,12 @@ jobs:
             --set deploymentMode=SingleBinary \
             --set loki.auth_enabled=false \
             --set loki.commonConfig.replication_factor=1 \
+            --set loki.useTestSchema=true \
             --set loki.storage.type=s3 \
-            --set loki.storage.bucketNames.chunks="project6-terraform-loki-${{ inputs.environment }}-230620261146" \
-            --set loki.storage.bucketNames.ruler="project6-terraform-loki-${{ inputs.environment }}-230620261146" \
-            --set loki.storage.bucketNames.admin="project6-terraform-loki-${{ inputs.environment }}-230620261146" \
-            --set loki.storage.s3.region="${{ vars.AWS_REGION }}" \
+            --set loki.storage.bucketNames.chunks="project6-terraform-loki-staging-230620261146" \
+            --set loki.storage.bucketNames.ruler="project6-terraform-loki-staging-230620261146" \
+            --set loki.storage.bucketNames.admin="project6-terraform-loki-staging-230620261146" \
+            --set loki.storage.s3.region="us-east-1" \
             --set singleBinary.replicas=1 \
             --set read.replicas=0 \
             --set write.replicas=0 \
