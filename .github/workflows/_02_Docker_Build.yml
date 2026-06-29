@@ -20,8 +20,8 @@ jobs:
   
   Check-variables:
     
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
         
     steps:      
             
@@ -47,8 +47,8 @@ jobs:
     needs:
       - Check-variables
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
     
     outputs:
       is_release: ${{ steps.compute-image-tag.outputs.is_release }}
@@ -173,8 +173,8 @@ jobs:
     needs:
       - Semantic_Release
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -237,8 +237,8 @@ jobs:
     needs:
       - Semantic_Release
     
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     environment: ${{ inputs.environment }}
 

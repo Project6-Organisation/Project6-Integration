@@ -24,8 +24,8 @@ permissions:
 jobs:
   deploy-helm:
     
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     environment: ${{ inputs.environment }}
 
@@ -138,27 +138,6 @@ jobs:
       #     fail_action: false
       #     allow_issue_writing: false
 
-  zap_scan:
-  
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
-
-    name: Scan the FrontEnd application with OWASP ZAP
-
-    needs: deploy-helm
-
-    if: inputs.environment == 'staging'
-  
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4        
-      - name: ZAP Scan
-        uses: zaproxy/action-api-scan@v0.10.0
-        with:          
-          target: ${{ env.APP_URL }}
-          artifact_name: zap_report          
-          
-
   # zap_scan:
   
   #   runs-on: [self-hosted, project6]
@@ -174,8 +153,29 @@ jobs:
   #     - name: Checkout
   #       uses: actions/checkout@v4        
   #     - name: ZAP Scan
-  #       uses: zaproxy/action-full-scan@v0.13.0
-  #       with:
-  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #       uses: zaproxy/action-api-scan@v0.10.0
+  #       with:          
   #         target: ${{ env.APP_URL }}
-  #         docker_name: zaproxy/zap-stable
+  #         artifact_name: zap_report          
+          
+
+  zap_scan:
+  
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
+
+    name: Scan the FrontEnd application with OWASP ZAP
+
+    needs: deploy-helm
+
+    if: inputs.environment == 'staging'
+  
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4        
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.13.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: ${{ env.APP_URL }}
+          docker_name: zaproxy/zap-stable
