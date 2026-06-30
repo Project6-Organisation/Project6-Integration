@@ -252,30 +252,30 @@ jobs:
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
 
-      - name: Cleanup GHCR package versions - keep last 5
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ORG: Project6-Organisation
-          PACKAGE_NAME: backend # ou frontend
-          KEEP_LAST: 5
-        run: |
-          echo "Cleaning package: $PACKAGE_NAME"
+      # - name: Cleanup GHCR package versions - keep last 5
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     ORG: Project6-Organisation
+      #     PACKAGE_NAME: backend # ou frontend
+      #     KEEP_LAST: 5
+      #   run: |
+      #     echo "Cleaning package: $PACKAGE_NAME"
 
-          VERSION_IDS=$(gh api \
-            "/orgs/$ORG/packages/container/$PACKAGE_NAME/versions?per_page=100" \
-            --jq "sort_by(.created_at) | reverse | .[$KEEP_LAST:] | .[].id")
+      #     VERSION_IDS=$(gh api \
+      #       "/orgs/$ORG/packages/container/$PACKAGE_NAME/versions?per_page=100" \
+      #       --jq "sort_by(.created_at) | reverse | .[$KEEP_LAST:] | .[].id")
 
-          if [ -z "$VERSION_IDS" ]; then
-            echo "Nothing to delete. 5 or fewer versions found."
-            exit 0
-          fi
+      #     if [ -z "$VERSION_IDS" ]; then
+      #       echo "Nothing to delete. 5 or fewer versions found."
+      #       exit 0
+      #     fi
 
-          for VERSION_ID in $VERSION_IDS; do
-            echo "Deleting version id: $VERSION_ID"
-            gh api \
-              --method DELETE \
-              "/orgs/$ORG/packages/container/$PACKAGE_NAME/versions/$VERSION_ID"
-          done
+      #     for VERSION_ID in $VERSION_IDS; do
+      #       echo "Deleting version id: $VERSION_ID"
+      #       gh api \
+      #         --method DELETE \
+      #         "/orgs/$ORG/packages/container/$PACKAGE_NAME/versions/$VERSION_ID"
+      #     done
       
   zap_scan-BackEnd:
   
