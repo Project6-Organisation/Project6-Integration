@@ -30,6 +30,8 @@ grafana:
         file: dashboards/k8s-view-nodes.json
       kubernetes-pods:
         file: dashboards/k8s-view-pods.json
+      dashboard-oc:
+        file: dashboards/dashboard-oc.json
 
 prometheusOperator:
   admissionWebhooks:
