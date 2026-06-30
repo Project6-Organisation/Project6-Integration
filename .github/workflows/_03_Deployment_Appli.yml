@@ -102,9 +102,7 @@ jobs:
         run: |
           helm upgrade --install pushgateway prometheus-community/prometheus-pushgateway \
             --namespace monitoring \
-            --set service.type=ClusterIP \
-            --set serviceMonitor.enabled=true \
-            --set serviceMonitor.additionalLabels.release=monitoring
+            -f integration/helm/monitoring/pushgateway-values.yaml
 
       - name: Display Grafana URL
         run: |
@@ -284,7 +282,7 @@ jobs:
 
           LEAD_TIME_SECONDS=$(( $(date +%s) - $(git show -s --format=%ct ${{ github.sha }}) ))
 
-          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}"
+          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
           dora_deployment_total 1
           dora_deployment_success_total 1
           dora_change_failure_total 0
