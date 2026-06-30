@@ -282,11 +282,9 @@ jobs:
 
           sleep 5
 
-          PUSHGATEWAY_URL="http://127.0.0.1:9091"
-
           LEAD_TIME_SECONDS=$(( $(date +%s) - $(git show -s --format=%ct ${{ github.sha }}) ))
 
-          cat <<EOF | curl --fail --data-binary @- "$PUSHGATEWAY_URL/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}"
+          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}"
           dora_deployment_total 1
           dora_deployment_success_total 1
           dora_change_failure_total 0
