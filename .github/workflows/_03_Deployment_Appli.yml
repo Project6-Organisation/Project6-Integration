@@ -76,7 +76,9 @@ jobs:
             -n monitoring \
             --dry-run=client -o yaml \
             | kubectl label --local -f - grafana_dashboard=1 -o yaml \
-            | kubectl apply -f -
+            
+          kubectl replace -f /tmp/grafana-dashboards.yaml || \
+          kubectl create -f /tmp/grafana-dashboards.yaml
 
       - name: Install Prometheus and Grafana
         run: |
