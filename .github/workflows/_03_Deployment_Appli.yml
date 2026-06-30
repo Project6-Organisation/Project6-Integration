@@ -69,16 +69,21 @@ jobs:
             --namespace monitoring \
             -f integration/helm/monitoring/loki-values.yaml
 
-      - name: Create Grafana dashboards ConfigMap
+      - name: Create Grafana dashboards ConfigMaps
         run: |
-          kubectl create configmap grafana-dashboards \
-            --from-file=integration/helm/monitoring/dashboards/ \
-            -n monitoring \
-            --dry-run=client -o yaml \
-            | kubectl label --local -f - grafana_dashboard=1 -o yaml \
-            
-          kubectl replace -f /tmp/grafana-dashboards.yaml || \
-          kubectl create -f /tmp/grafana-dashboards.yaml
+          for dashboard in integration/helm/monitoring/dashboards/*.json; do
+            name=$(basename "$dashboard" .json)
+
+            kubectl create configmap "grafana-dashboard-$name" \
+              --from-file="$dashboard" \
+              -n monitoring \
+              --dry-run=client -o yaml \
+              | kubectl label --local -f - grafana_dashboard=1 -o yaml \
+              > "/tmp/grafana-dashboard-$name.yaml"
+
+            kubectl replace -f "/tmp/grafana-dashboard-$name.yaml" || \
+            kubectl create -f "/tmp/grafana-dashboard-$name.yaml"
+          done
 
       - name: Install Prometheus and Grafana
         run: |
