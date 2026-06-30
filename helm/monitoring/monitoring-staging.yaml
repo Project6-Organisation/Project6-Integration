@@ -33,9 +33,6 @@ grafana:
       kubernetes-pods:
         file: dashboards/k8s-view-pods.json
 
-  dashboardsConfigMaps:
-    default: grafana-dashboards
-
 prometheusOperator:
   admissionWebhooks:
     enabled: false
