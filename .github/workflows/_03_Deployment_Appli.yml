@@ -207,7 +207,7 @@ jobs:
             --set ingress.baseDomain=$BASE_DOMAIN \
             --atomic \
             --wait \
-            --timeout 5m
+            --timeout 10m
 
       - name: Display application URL
         run: |
