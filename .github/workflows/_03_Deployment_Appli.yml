@@ -69,6 +69,12 @@ jobs:
             --namespace monitoring \
             -f integration/helm/monitoring/loki-values.yaml
 
+      - name: Install Promtail
+        run: |
+          helm upgrade --install promtail grafana/promtail \
+            --namespace monitoring \
+            -f integration/helm/monitoring/promtail-values.yaml
+
       - name: Create Grafana dashboards ConfigMaps
         run: |
           for dashboard in integration/helm/monitoring/dashboards/*.json; do
