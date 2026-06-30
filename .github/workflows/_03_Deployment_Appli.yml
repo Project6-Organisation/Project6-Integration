@@ -262,16 +262,23 @@ jobs:
       - name: DORA - Push deployment metrics
         if: inputs.environment == 'staging'
         run: |
-          PUSHGATEWAY_URL="http://pushgateway-prometheus-pushgateway.monitoring.svc.cluster.local:9091"
+          kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
+          PF_PID=$!
+
+          sleep 5
+
+          PUSHGATEWAY_URL="http://127.0.0.1:9091"
 
           LEAD_TIME_SECONDS=$(( $(date +%s) - $(git show -s --format=%ct ${{ github.sha }}) ))
 
-          cat <<EOF | curl --data-binary @- "$PUSHGATEWAY_URL/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}"
+          cat <<EOF | curl --fail --data-binary @- "$PUSHGATEWAY_URL/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}"
           dora_deployment_total 1
           dora_deployment_success_total 1
           dora_change_failure_total 0
           dora_lead_time_seconds $LEAD_TIME_SECONDS
           EOF
+
+          kill $PF_PID
 
       # - name: Cleanup GHCR package versions - keep last 5
       #   env:
