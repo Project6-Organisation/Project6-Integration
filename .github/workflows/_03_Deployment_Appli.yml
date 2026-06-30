@@ -53,7 +53,7 @@ jobs:
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name project6-eks-${{ inputs.environment }}
 
-      - name: Add Helm repositories
+      - name: Add Helm repositories (grafana/loki and prometheus-community)
         run: |
           helm repo add grafana https://grafana.github.io/helm-charts
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -69,11 +69,21 @@ jobs:
             --namespace monitoring \
             -f integration/helm/monitoring/loki-values.yaml
 
-      - name: Install Prometheus/Grafana
+      - name: Create Grafana dashboards ConfigMap
+        run: |
+          kubectl create configmap grafana-dashboards \
+            --from-file=integration/helm/monitoring/dashboards/ \
+            -n monitoring \
+            --dry-run=client -o yaml \
+            | kubectl label --local -f - grafana_dashboard=1 -o yaml \
+            | kubectl apply -f -
+
+      - name: Install Prometheus and Grafana
         run: |
           helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
             --namespace monitoring \
-            -f integration/helm/monitoring/monitoring-${{ inputs.environment }}.yaml
+            -f integration/helm/monitoring/monitoring-${{ inputs.environment }}.yaml \
+            --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PWD }}"
 
       - name: Display Grafana URL
         run: |

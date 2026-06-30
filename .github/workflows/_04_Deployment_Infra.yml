@@ -253,17 +253,28 @@ jobs:
             --region $AWS_REGION \
             --name project6-eks-${{ inputs.environment }}
 
-      - name: Uninstall application Helm release
+      - name: Uninstall Helm microcrm
         continue-on-error: true
         run: |
           helm uninstall microcrm -n microcrm-${{ inputs.environment }} || true
 
-      - name: Delete application namespace
+      - name: Delete namespace Helm microcrm
         continue-on-error: true
         run: |
           kubectl delete namespace microcrm-${{ inputs.environment }} \
             --ignore-not-found=true
 
+      - name: Uninstall Helm monitoring
+        continue-on-error: true
+        run: |
+          helm uninstall monitoring -n monitoring || true
+          helm uninstall loki -n monitoring || true
+
+      - name: Delete namespace Helm monitoring
+        continue-on-error: true
+        run: |
+          kubectl delete namespace monitoring --ignore-not-found=true
+      
       - name: Wait for AWS LoadBalancer cleanup
         run: |
           echo "Waiting for LoadBalancer cleanup..."

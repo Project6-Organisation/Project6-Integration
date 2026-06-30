@@ -22,6 +22,20 @@ grafana:
       alb.ingress.kubernetes.io/ssl-redirect: "443"
       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:161438779240:certificate/af9ef7c4-5e92-4323-a81d-b19f549d7e4b
 
+  dashboards:
+    default:
+      kubernetes-global:
+        file: dashboards/k8s_global_views.json
+      kubernetes-namespaces:
+        file: dashboards/k8s_view_namespaces.json
+      kubernetes-nodes:
+        file: dashboards/k8s_view_nodes.json
+      kubernetes-pods:
+        file: dashboards/k8s_view_pods.json
+
+  dashboardsConfigMaps:
+    default: grafana-dashboards
+
 prometheusOperator:
   admissionWebhooks:
     enabled: false
