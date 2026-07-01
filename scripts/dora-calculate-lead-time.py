@@ -107,7 +107,8 @@ def dora_calculate_lead_time(token: str, owner: str, repo: str, deployment_sha: 
     lead_time_minutes = lead_time_seconds / 60
     lead_time_hours = lead_time_minutes / 60
     print(f"Lead time         : {lead_time_minutes:.1f} min ({lead_time_hours:.2f} h)")
-
+    print(f"{lead_time_seconds:.0f}")
+    
     return lead_time_hours
 
 dora_calculate_lead_time(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

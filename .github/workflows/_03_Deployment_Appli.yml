@@ -202,8 +202,7 @@ jobs:
             "${{ secrets.GITHUB_TOKEN }}" \
             "${{ inputs.repo_owner }}" \
             "${{ inputs.repo_name }}" \
-            "${{ inputs.commit_sha }}" \
-            | tail -n1)
+            "${{ inputs.commit_sha }}")
 
           echo "$OUTPUT"
 
