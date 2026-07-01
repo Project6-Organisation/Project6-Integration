@@ -207,28 +207,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           
-          python3 -m venv .venv
-          .venv/bin/pip install requests
-
           kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
           PF_PID=$!
 
           sleep 5
 
-          LEAD_TIME_SECONDS=$(.venv/bin/python integration/scripts/lead_time.py \
-            "${{ github.sha }}" \
-            "${{ github.repository_owner }}" \
-            "${{ github.event.repository.name }}" \
-            | tail -n1)
-
-          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
-          dora_deployment_total 1
-          dora_deployment_success_total 1
-          dora_change_failure_total 0
-          dora_lead_time_seconds $LEAD_TIME_SECONDS
-          EOF
+          python integration/scripts/helloworld.py
 
           kill $PF_PID
+
+      # - name: push DORA metrics
+      #   if: inputs.environment == 'staging'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+          
+      #     kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
+      #     PF_PID=$!
+
+      #     sleep 5
+
+      #     LEAD_TIME_SECONDS=$(python integration/scripts/lead_time.py \
+      #       "${{ github.sha }}" \
+      #       "${{ github.repository_owner }}" \
+      #       "${{ github.event.repository.name }}" \
+      #       | tail -n1)
+
+      #     cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
+      #     dora_deployment_total 1
+      #     dora_deployment_success_total 1
+      #     dora_change_failure_total 0
+      #     dora_lead_time_seconds $LEAD_TIME_SECONDS
+      #     EOF
+
+      #     kill $PF_PID
             
   zap_scan-BackEnd:
   
