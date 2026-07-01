@@ -131,30 +131,54 @@ jobs:
         run: |
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
-
-      # - name: DORA - Push deployment metrics - WITH GITHUB RUNNER
+                
+      # - name: DORA metrics - Deployment Frequency (DF)
       #   if: inputs.environment == 'staging'
       #   run: |
-      #     PUSHGATEWAY_URL="http://pushgateway-prometheus-pushgateway.monitoring.svc.cluster.local:9091"
+      #     kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
+      #     PF_PID=$!
+
+      #     sleep 5
 
       #     LEAD_TIME_SECONDS=$(( $(date +%s) - $(git show -s --format=%ct ${{ github.sha }}) ))
 
-      #     cat <<EOF | curl --data-binary @- "$PUSHGATEWAY_URL/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}"
+      #     cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
       #     dora_deployment_total 1
       #     dora_deployment_success_total 1
       #     dora_change_failure_total 0
       #     dora_lead_time_seconds $LEAD_TIME_SECONDS
       #     EOF
-          
-      - name: DORA - Push deployment metrics
+
+      #     kill $PF_PID
+
+      # - name: DORA metrics - Calculate Lead Time
+      #   id: lead_time
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     LEAD_TIME=$(python scripts/lead_time.py \
+      #       "${{ github.sha }}" \
+      #       "${{ github.repository_owner }}" \
+      #       "${{ github.event.repository.name }}" \
+      #       | tail -n1)
+
+      #     echo "lead_time=$LEAD_TIME" >> "$GITHUB_OUTPUT"
+
+      - name: push DORA metrics
         if: inputs.environment == 'staging'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
           PF_PID=$!
 
           sleep 5
 
-          LEAD_TIME_SECONDS=$(( $(date +%s) - $(git show -s --format=%ct ${{ github.sha }}) ))
+          LEAD_TIME_SECONDS=$(python scripts/lead_time.py \
+            "${{ github.sha }}" \
+            "${{ github.repository_owner }}" \
+            "${{ github.event.repository.name }}" \
+            | tail -n1)
 
           cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
           dora_deployment_total 1
@@ -164,32 +188,7 @@ jobs:
           EOF
 
           kill $PF_PID
-
-      # - name: Cleanup GHCR package versions - keep last 5
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     ORG: Project6-Organisation
-      #     PACKAGE_NAME: backend # ou frontend
-      #     KEEP_LAST: 5
-      #   run: |
-      #     echo "Cleaning package: $PACKAGE_NAME"
-
-      #     VERSION_IDS=$(gh api \
-      #       "/orgs/$ORG/packages/container/$PACKAGE_NAME/versions?per_page=100" \
-      #       --jq "sort_by(.created_at) | reverse | .[$KEEP_LAST:] | .[].id")
-
-      #     if [ -z "$VERSION_IDS" ]; then
-      #       echo "Nothing to delete. 5 or fewer versions found."
-      #       exit 0
-      #     fi
-
-      #     for VERSION_ID in $VERSION_IDS; do
-      #       echo "Deleting version id: $VERSION_ID"
-      #       gh api \
-      #         --method DELETE \
-      #         "/orgs/$ORG/packages/container/$PACKAGE_NAME/versions/$VERSION_ID"
-      #     done
-      
+            
   zap_scan-BackEnd:
   
     runs-on: [self-hosted, project6]
