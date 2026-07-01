@@ -198,14 +198,18 @@ jobs:
 
           sleep 5
 
-          LEAD_TIME_SECONDS=$(python integration/scripts/dora-calculate-lead-time.py \
+          OUTPUT=$(python integration/scripts/dora-calculate-lead-time.py \
             "${{ secrets.GITHUB_TOKEN }}" \
-            "${{ github.repository_owner }}" \
-            "${{ github.event.repository.name }}" \
-            "${{ github.sha }}" \
+            "${{ inputs.repo_owner }}" \
+            "${{ inputs.repo_name }}" \
+            "${{ inputs.commit_sha }}" \
             | tail -n1)
 
-          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
+          echo "$OUTPUT"
+
+          LEAD_TIME_SECONDS=$(echo "$OUTPUT" | tail -n1)
+
+          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ inputs.commit_sha }}"
           dora_deployment_total 1
           dora_deployment_success_total 1
           dora_change_failure_total 0
