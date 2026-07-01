@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 GITHUB_TOKEN = sys.argv[1]
 OWNER = sys.argv[2]
 REPO = sys.argv[3]
+SHA = sys.argv[4]
 
 headers = {
     "Authorization": f"Bearer {GITHUB_TOKEN}",
@@ -76,7 +77,7 @@ def get_mr_commit_date(commit_sha: str) -> datetime:
         commit["commit"]["committer"]["date"].replace("Z", "+00:00")
     )
 
-def calculate_lead_time(deployment_sha: str) -> float | None:
+def dora_calculate_lead_time(token: str, owner: str, repo: str, deployment_sha: str) -> float | None:
     
     mr = get_mr_from_commit(deployment_sha)
 
@@ -109,14 +110,16 @@ def calculate_lead_time(deployment_sha: str) -> float | None:
 
     return lead_time_hours
 
+dora_calculate_lead_time(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 
-if __name__ == "__main__":
-    import sys
 
-    if len(sys.argv) != 2:
-        sys.exit(1)
+# if __name__ == "__main__":
+#     import sys
 
-    lead_time = calculate_lead_time(sys.argv[1])
+#     if len(sys.argv) != 2:
+#         sys.exit(1)
 
-    if lead_time is not None:
-        print(lead_time)
+#     lead_time = calculate_lead_time(sys.argv[1])
+
+#     if lead_time is not None:
+#         print(lead_time)
