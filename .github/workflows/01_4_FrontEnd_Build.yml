@@ -16,7 +16,7 @@ jobs:
         working-directory: ./front
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Workaround for self-hosted runner ...
       # Can be removed with github runner
