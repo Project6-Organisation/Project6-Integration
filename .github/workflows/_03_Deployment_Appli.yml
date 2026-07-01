@@ -174,7 +174,7 @@ jobs:
 
           sleep 5
 
-          LEAD_TIME_SECONDS=$(python scripts/lead_time.py \
+          LEAD_TIME_SECONDS=$(python integration/scripts/lead_time.py \
             "${{ github.sha }}" \
             "${{ github.repository_owner }}" \
             "${{ github.event.repository.name }}" \
