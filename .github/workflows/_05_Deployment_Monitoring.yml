@@ -1,0 +1,146 @@
+name: Deployment application
+
+on:
+  workflow_call:
+    
+    secrets:
+        AWS_ACCESS_KEY_ID:
+          required: true
+        AWS_SECRET_ACCESS_KEY:
+          required: true
+      
+    inputs:
+      environment:
+        required: true
+        type: string      
+
+permissions:
+  contents: read
+  packages: read
+  issues: write
+
+jobs:
+  
+  deploy-monitoring:
+
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
+    
+    name: Deploy Monitoring Stack
+
+    environment: ${{ inputs.environment }}
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout integration repository
+        uses: actions/checkout@v4
+        with:
+          repository: Project6-Organisation/Project6-Integration
+          path: integration
+
+      - name: Configure kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name project6-eks-${{ inputs.environment }}
+
+      - name: Add Helm repositories (grafana/loki and prometheus-community)
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+
+      - name: Create monitoring namespace
+        run: |
+          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Install Loki
+        run: |
+          helm upgrade --install loki grafana/loki \
+            --namespace monitoring \
+            -f integration/helm/monitoring/loki-values.yaml
+
+      - name: Install Promtail
+        run: |
+          helm upgrade --install promtail grafana/promtail \
+            --namespace monitoring \
+            -f integration/helm/monitoring/promtail-values.yaml
+
+      - name: Create Grafana dashboards ConfigMaps
+        run: |
+          for dashboard in integration/helm/monitoring/dashboards/*.json; do
+            name=$(basename "$dashboard" .json)
+
+            kubectl create configmap "grafana-dashboard-$name" \
+              --from-file="$dashboard" \
+              -n monitoring \
+              --dry-run=client -o yaml \
+              | kubectl label --local -f - grafana_dashboard=1 -o yaml \
+              > "/tmp/grafana-dashboard-$name.yaml"
+
+            kubectl replace -f "/tmp/grafana-dashboard-$name.yaml" || \
+            kubectl create -f "/tmp/grafana-dashboard-$name.yaml"
+          done
+
+      - name: Install Prometheus and Grafana
+        run: |
+          helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+            --namespace monitoring \
+            -f integration/helm/monitoring/monitoring-${{ inputs.environment }}.yaml \
+            --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PWD }}"
+
+      - name: Install Prometheus Pushgateway
+        run: |
+          helm upgrade --install pushgateway prometheus-community/prometheus-pushgateway \
+            --namespace monitoring \
+            -f integration/helm/monitoring/pushgateway-values.yaml
+
+      - name: Display Grafana URL
+        run: |
+          echo "Waiting for Grafana Ingress ALB URL..."
+
+          GRAFANA_INGRESS_URL=""
+
+          for i in {1..30}; do
+            GRAFANA_INGRESS_URL=$(kubectl get ingress monitoring-grafana \
+              -n monitoring \
+              -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+            if [ -n "$GRAFANA_INGRESS_URL" ]; then
+              break
+            fi
+
+            echo "Grafana Ingress ALB not ready yet... retry $i/30"
+            sleep 10
+          done
+
+          if [ -z "$GRAFANA_INGRESS_URL" ]; then
+            echo "Grafana Ingress ALB URL not found"
+            kubectl describe ingress monitoring-grafana -n monitoring
+            exit 1
+          fi
+
+          GRAFANA_URL="https://microcrm-grafana.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
+
+          echo "Grafana ALB URL: https://$GRAFANA_INGRESS_URL"
+          echo "Grafana URL: $GRAFANA_URL"
+
+          echo "### Monitoring deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Grafana ALB URL: https://$GRAFANA_INGRESS_URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Grafana URL: $GRAFANA_URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "OVH domain configuration: edit DNS record (CNAME)" >> $GITHUB_STEP_SUMMARY
+          echo "microcrm-grafana.${{ inputs.environment }} => $GRAFANA_INGRESS_URL." >> $GITHUB_STEP_SUMMARY
+          
+      - name: Check monitoring
+        run: |
+          kubectl get pods -n monitoring
+          kubectl get svc -n monitoring
