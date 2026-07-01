@@ -164,6 +164,10 @@ jobs:
 
       #     echo "lead_time=$LEAD_TIME" >> "$GITHUB_OUTPUT"
 
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install requests
+
       - name: push DORA metrics
         if: inputs.environment == 'staging'
         env:
@@ -174,7 +178,7 @@ jobs:
 
           sleep 5
 
-          LEAD_TIME_SECONDS=$(python integration/scripts/lead_time.py \
+          LEAD_TIME_SECONDS=$(python3 integration/scripts/lead_time.py \
             "${{ github.sha }}" \
             "${{ github.repository_owner }}" \
             "${{ github.event.repository.name }}" \
