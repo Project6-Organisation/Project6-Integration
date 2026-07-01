@@ -16,6 +16,15 @@ on:
       image_tag:
         required: true
         type: string
+      commit_sha:
+        required: true
+        type: string
+      repo_owner:
+        required: true
+        type: string
+      repo_name: 
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -55,18 +64,21 @@ jobs:
             exit 1
           fi
 
-      - name: Check image tag
+      - name: Check parameters
         run: |
           echo "Image Tag: ${{ inputs.image_tag }}"
           if [ "${{ inputs.image_tag }}" = "" ]; then
-            echo "Invalid image tag: ${{ inputs.image_tag }}"
-            exit 1
+          echo "Invalid image tag: ${{ inputs.image_tag }}"
+          exit 1
           fi
+          echo "Commit SHA: ${{ inputs.commit_sha }}"
+          echo "Repo Owner: ${{ inputs.repo_owner }}"
+          echo "Repo Name: ${{ inputs.repo_name }}"
 
       - name: Display environment variables
         run: |
           echo "AWS_REGION: $AWS_REGION"
-          echo "AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION"
+          echo "AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION"          
 
       - name: Configure kubeconfig for EKS
         run: |
@@ -212,35 +224,20 @@ jobs:
 
           sleep 5
 
-          python integration/scripts/helloworld.py
+          LEAD_TIME_SECONDS=$(python integration/scripts/lead_time.py \
+            "${{ github.sha }}" \
+            "${{ github.repository_owner }}" \
+            "${{ github.event.repository.name }}" \
+            | tail -n1)
+
+          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
+          dora_deployment_total 1
+          dora_deployment_success_total 1
+          dora_change_failure_total 0
+          dora_lead_time_seconds $LEAD_TIME_SECONDS
+          EOF
 
           kill $PF_PID
-
-      # - name: push DORA metrics
-      #   if: inputs.environment == 'staging'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-          
-      #     kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
-      #     PF_PID=$!
-
-      #     sleep 5
-
-      #     LEAD_TIME_SECONDS=$(python integration/scripts/lead_time.py \
-      #       "${{ github.sha }}" \
-      #       "${{ github.repository_owner }}" \
-      #       "${{ github.event.repository.name }}" \
-      #       | tail -n1)
-
-      #     cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
-      #     dora_deployment_total 1
-      #     dora_deployment_success_total 1
-      #     dora_change_failure_total 0
-      #     dora_lead_time_seconds $LEAD_TIME_SECONDS
-      #     EOF
-
-      #     kill $PF_PID
             
   zap_scan-BackEnd:
   
