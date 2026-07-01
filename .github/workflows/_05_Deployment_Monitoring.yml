@@ -36,10 +36,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout integration repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Project6-Organisation/Project6-Integration
           path: integration

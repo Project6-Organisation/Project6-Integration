@@ -41,7 +41,7 @@ jobs:
     steps:
 
       - name: Checkout integration repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Project6-Organisation/Project6-Integration
           path: integration
@@ -200,7 +200,7 @@ jobs:
           echo "URL to scan : https://microcrm-api.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
@@ -236,7 +236,7 @@ jobs:
           echo "URL to scan : https://microcrm.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
