@@ -76,3 +76,34 @@ jobs:
           helm history microcrm \
             -n microcrm-${{ inputs.environment }} \
             | tail -n 5 >> $GITHUB_STEP_SUMMARY
+
+      # WITH GITHUB RUNNER
+      # - name: Set up Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "3.12"
+
+      # - name: Install Python dependencies
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     python -m pip install requests
+      
+      - name: push DORA metrics
+        #  Switch to prod !!!!
+        if: inputs.environment == 'staging'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          
+          kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
+          PF_PID=$!
+
+          sleep 5
+
+          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ inputs.commit_sha }}"
+          dora_deployment_total 1
+          dora_deployment_success_total 0
+          dora_change_failure_total 1
+          EOF
+
+          kill $PF_PID

@@ -15,16 +15,7 @@ on:
         type: string
       image_tag:
         required: true
-        type: string
-      commit_sha:
-        required: true
-        type: string
-      repo_owner:
-        required: true
-        type: string
-      repo_name: 
-        required: true
-        type: string
+        type: string      
 
 permissions:
   contents: read
@@ -70,10 +61,7 @@ jobs:
           if [ "${{ inputs.image_tag }}" = "" ]; then
           echo "Invalid image tag: ${{ inputs.image_tag }}"
           exit 1
-          fi
-          echo "Commit SHA: ${{ inputs.commit_sha }}"
-          echo "Repo Owner: ${{ inputs.repo_owner }}"
-          echo "Repo Name: ${{ inputs.repo_name }}"
+          fi          
 
       - name: Display environment variables
         run: |
@@ -143,39 +131,7 @@ jobs:
         run: |
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
-                
-      # - name: DORA metrics - Deployment Frequency (DF)
-      #   if: inputs.environment == 'staging'
-      #   run: |
-      #     kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
-      #     PF_PID=$!
-
-      #     sleep 5
-
-      #     LEAD_TIME_SECONDS=$(( $(date +%s) - $(git show -s --format=%ct ${{ github.sha }}) ))
-
-      #     cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
-      #     dora_deployment_total 1
-      #     dora_deployment_success_total 1
-      #     dora_change_failure_total 0
-      #     dora_lead_time_seconds $LEAD_TIME_SECONDS
-      #     EOF
-
-      #     kill $PF_PID
-
-      # - name: DORA metrics - Calculate Lead Time
-      #   id: lead_time
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     LEAD_TIME=$(python scripts/lead_time.py \
-      #       "${{ github.sha }}" \
-      #       "${{ github.repository_owner }}" \
-      #       "${{ github.event.repository.name }}" \
-      #       | tail -n1)
-
-      #     echo "lead_time=$LEAD_TIME" >> "$GITHUB_OUTPUT"
-  
+        
       # WITH GITHUB RUNNER
       # - name: Set up Python
       #   uses: actions/setup-python@v5
@@ -188,6 +144,7 @@ jobs:
       #     python -m pip install requests
       
       - name: push DORA metrics
+        #  Switch to prod !!!!
         if: inputs.environment == 'staging'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -200,15 +157,15 @@ jobs:
 
           OUTPUT=$(python integration/scripts/dora-calculate-lead-time.py \
             "${{ secrets.GITHUB_TOKEN }}" \
-            "${{ inputs.repo_owner }}" \
-            "${{ inputs.repo_name }}" \
-            "${{ inputs.commit_sha }}")
+            "${{ github.repository_owner }}" \
+            "${{ github.event.repository.name }}" \
+            "${{ github.sha }}")
 
           echo "$OUTPUT"
 
           LEAD_TIME_SECONDS=$(echo "$OUTPUT" | tail -n1)
 
-          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ inputs.commit_sha }}"
+          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ github.sha }}"
           dora_deployment_total 1
           dora_deployment_success_total 1
           dora_change_failure_total 0
