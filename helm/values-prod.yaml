@@ -3,12 +3,12 @@ namespace: microcrm-prod
 backend:
   image:
     tag: v1.6.0
-  replicas: 5
+  replicas: 2
 
 frontend:
   image:
     tag: v1.6.0
-  replicas: 5
+  replicas: 2
 
 ingress:
   enabled: true
