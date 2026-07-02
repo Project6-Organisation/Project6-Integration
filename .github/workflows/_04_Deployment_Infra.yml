@@ -157,25 +157,25 @@ jobs:
             --region $AWS_REGION \
             --name project6-eks-${{ inputs.environment }}
 
-      - name: Deploy AWS EBS CSI Driver
-        run: |
-          aws eks describe-addon \
-            --cluster-name project6-eks-${{ inputs.environment }} \
-            --addon-name aws-ebs-csi-driver \
-            --region $AWS_REGION \
-          || aws eks create-addon \
-            --cluster-name project6-eks-${{ inputs.environment }} \
-            --addon-name aws-ebs-csi-driver \
-            --region $AWS_REGION
+      # - name: Deploy AWS EBS CSI Driver
+      #   run: |
+      #     aws eks describe-addon \
+      #       --cluster-name project6-eks-${{ inputs.environment }} \
+      #       --addon-name aws-ebs-csi-driver \
+      #       --region $AWS_REGION \
+      #     || aws eks create-addon \
+      #       --cluster-name project6-eks-${{ inputs.environment }} \
+      #       --addon-name aws-ebs-csi-driver \
+      #       --region $AWS_REGION
 
-          aws eks wait addon-active \
-            --cluster-name project6-eks-${{ inputs.environment }} \
-            --addon-name aws-ebs-csi-driver \
-            --region $AWS_REGION
+      #     aws eks wait addon-active \
+      #       --cluster-name project6-eks-${{ inputs.environment }} \
+      #       --addon-name aws-ebs-csi-driver \
+      #       --region $AWS_REGION
       
-      - name: Check AWS EBS CSI Driver
-        run: |
-          kubectl get pods -n kube-system | grep ebs
+      # - name: Check AWS EBS CSI Driver
+      #   run: |
+      #     kubectl get pods -n kube-system | grep ebs
       
       - name: Deploy AWS Load Balancer Controller
         run: |
@@ -307,22 +307,22 @@ jobs:
         run: |
           kubectl delete namespace monitoring --ignore-not-found=true
       
-      - name: Delete AWS EBS CSI Driver addon
-        continue-on-error: true
-        run: |
-          aws eks delete-addon \
-            --cluster-name project6-eks-${{ inputs.environment }} \
-            --addon-name aws-ebs-csi-driver \
-            --region $AWS_REGION \
-            --preserve false || true
+      # - name: Delete AWS EBS CSI Driver addon
+      #   continue-on-error: true
+      #   run: |
+      #     aws eks delete-addon \
+      #       --cluster-name project6-eks-${{ inputs.environment }} \
+      #       --addon-name aws-ebs-csi-driver \
+      #       --region $AWS_REGION \
+      #       --preserve false || true
 
-      - name: Wait for AWS EBS CSI Driver addon deletion
-        continue-on-error: true
-        run: |
-          aws eks wait addon-deleted \
-            --cluster-name project6-eks-${{ inputs.environment }} \
-            --addon-name aws-ebs-csi-driver \
-            --region $AWS_REGION || true
+      # - name: Wait for AWS EBS CSI Driver addon deletion
+      #   continue-on-error: true
+      #   run: |
+      #     aws eks wait addon-deleted \
+      #       --cluster-name project6-eks-${{ inputs.environment }} \
+      #       --addon-name aws-ebs-csi-driver \
+      #       --region $AWS_REGION || true
       
       - name: Wait for AWS LoadBalancer cleanup
         run: |
