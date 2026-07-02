@@ -24,8 +24,8 @@ jobs:
 
   Check-variables:
     
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
     
     steps:      
       
@@ -55,8 +55,8 @@ jobs:
     needs: Check-variables
     if: inputs.action == 'plan' || inputs.action == 'apply'
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
     
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -114,8 +114,8 @@ jobs:
     needs: create-infra
     if: inputs.action == 'apply'
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -215,8 +215,8 @@ jobs:
     needs: Check-variables
     if: inputs.action == 'plan-destroy'
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -268,8 +268,8 @@ jobs:
     needs: Check-variables
     if: inputs.action == 'destroy'
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -351,8 +351,8 @@ jobs:
     needs: cleanup-addons
     if: inputs.action == 'destroy'
 
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

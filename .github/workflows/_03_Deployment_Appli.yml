@@ -26,8 +26,8 @@ jobs:
   
   deploy-helm:
         
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
 
     environment: ${{ inputs.environment }}
 
@@ -202,8 +202,8 @@ jobs:
             
   zap_scan-BackEnd:
   
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
     
     name: Scan the BackEnd application with OWASP ZAP
 
@@ -215,7 +215,7 @@ jobs:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
     # Desactivation temporaire du build
-    if: false    
+    #if: false
     # End desactivation temporaire du build
   
     steps:
@@ -237,8 +237,8 @@ jobs:
 
   zap_scan-FrontEnd:
   
-    runs-on: [self-hosted, project6]
-    # runs-on: ubuntu-latest
+    # runs-on: [self-hosted, project6]
+    runs-on: ubuntu-latest
     
     name: Scan the FrontEnd application with OWASP ZAP
 
@@ -250,7 +250,7 @@ jobs:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
     # Desactivation temporaire du build
-    if: false    
+    #if: false    
     # End desactivation temporaire du build
   
     steps:
