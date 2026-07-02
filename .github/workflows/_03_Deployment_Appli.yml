@@ -76,19 +76,45 @@ jobs:
         run: |
           kubectl get nodes
 
+      - name: Check Argo Rollouts
+        if: inputs.environment == 'prod'
+        run: |
+          kubectl get pods -n argo-rollouts
+          kubectl get crd rollouts.argoproj.io
+
       - name: Deploy application with Helm
         run: |
-          helm upgrade --install microcrm integration/helm \
-            -f integration/helm/values-${{ inputs.environment }}.yaml \
-            --namespace microcrm-${{ inputs.environment }} \
-            --create-namespace \
-            --set backend.image.tag=${{ inputs.image_tag }} \
-            --set frontend.image.tag=${{ inputs.image_tag }} \
-            --set ingress.baseDomain=$BASE_DOMAIN \
-            --atomic \
-            --wait \
-            --timeout 10m
+          if [ "${{ inputs.environment }}" = "prod" ]; then
+            helm upgrade --install microcrm integration/helm \
+              -f integration/helm/values-prod.yaml \
+              --namespace microcrm-prod \
+              --create-namespace \
+              --set backend.image.tag=${{ inputs.image_tag }} \
+              --set frontend.image.tag=${{ inputs.image_tag }} \
+              --set ingress.baseDomain=$BASE_DOMAIN \
+              --timeout 10m
+          else
+            helm upgrade --install microcrm integration/helm \
+              -f integration/helm/values-staging.yaml \
+              --namespace microcrm-staging \
+              --create-namespace \
+              --set backend.image.tag=${{ inputs.image_tag }} \
+              --set frontend.image.tag=${{ inputs.image_tag }} \
+              --set ingress.baseDomain=$BASE_DOMAIN \
+              --wait \
+              --atomic \
+              --timeout 10m
+          fi
 
+      - name: Check canary rollouts
+        if: inputs.environment == 'prod'
+        run: |
+          kubectl argo rollouts get rollout microcrm-frontend \
+            -n microcrm-${{ inputs.environment }}
+
+          kubectl argo rollouts get rollout microcrm-backend \
+            -n microcrm-${{ inputs.environment }}
+      
       - name: Display application URL
         run: |
           echo "Waiting for Ingress ALB URL..."
@@ -189,8 +215,7 @@ jobs:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
     # Desactivation temporaire du build
-    if: false
-    # if: inputs.environment == 'staging'
+    if: false    
     # End desactivation temporaire du build
   
     steps:
@@ -225,8 +250,7 @@ jobs:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
 
     # Desactivation temporaire du build
-    if: false
-    # if: inputs.environment == 'staging'
+    if: false    
     # End desactivation temporaire du build
   
     steps:

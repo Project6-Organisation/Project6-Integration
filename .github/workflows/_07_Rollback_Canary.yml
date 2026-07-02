@@ -1,0 +1,95 @@
+name: Rollback
+
+on:
+  workflow_call:
+    
+    secrets:
+        AWS_ACCESS_KEY_ID:
+          required: true
+        AWS_SECRET_ACCESS_KEY:
+          required: true
+      
+    inputs:      
+      environment:
+        required: true
+        type: string      
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    
+    runs-on: [self-hosted, project6]
+    # runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+
+    steps:
+      - name: Configure kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name project6-eks-${{ inputs.environment }}
+
+      - name: Rollback Backend
+        run: |
+          kubectl argo rollouts undo microcrm-backend \
+            -n microcrm-${{ inputs.environment }}
+
+      - name: Rollback Frontend
+        run: |
+          kubectl argo rollouts undo microcrm-frontend \
+            -n microcrm-${{ inputs.environment }}
+
+      - name: Display application URL
+        run: |
+          FRONTEND_URL=$(kubectl get svc microcrm-frontend-service \
+            -n microcrm-${{ inputs.environment }} \
+            -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+          echo ""
+          echo "Application URL:"
+          echo "http://$FRONTEND_URL"
+
+          echo "### Rollback completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Revision restored: ${{ inputs.revision }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Application URL: http://$FRONTEND_URL" >> $GITHUB_STEP_SUMMARY
+
+          echo "Current Helm revision:" >> $GITHUB_STEP_SUMMARY
+          helm history microcrm \
+            -n microcrm-${{ inputs.environment }} \
+            | tail -n 5 >> $GITHUB_STEP_SUMMARY
+
+      # WITH GITHUB RUNNER
+      # - name: Set up Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "3.12"
+
+      # - name: Install Python dependencies
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     python -m pip install requests
+      
+      - name: push DORA metrics        
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          
+          kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091 &
+          PF_PID=$!
+
+          sleep 5
+
+          cat <<EOF | curl --fail --data-binary @- "http://127.0.0.1:9091/metrics/job/dora/service/microcrm/environment/${{ inputs.environment }}/commit/${{ inputs.commit_sha }}"
+          dora_deployment_total 1
+          dora_deployment_success_total 0
+          dora_change_failure_total 1
+          EOF
+
+          kill $PF_PID
