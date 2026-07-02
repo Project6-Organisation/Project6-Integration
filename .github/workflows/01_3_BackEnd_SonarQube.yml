@@ -58,7 +58,7 @@ jobs:
             application/back/sonar-project.properties
 
       - name: Analyze BackEnd application with SonarQube
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
           
