@@ -41,16 +41,16 @@ prometheusOperator:
     patch:
       enabled: false
 
-# prometheus:
-#   prometheusSpec:
-#     retention: 5d
+prometheus:
+  prometheusSpec:
+    retention: 5d
 
-#     storageSpec:
-#       volumeClaimTemplate:
-#         spec:
-#           accessModes:
-#             - ReadWriteOnce
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
 
-#           resources:
-#             requests:
-#               storage: 1Gi
+          resources:
+            requests:
+              storage: 1Gi

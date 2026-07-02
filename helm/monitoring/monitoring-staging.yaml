@@ -43,28 +43,16 @@ prometheusOperator:
   tls:
     enabled: false
 
+prometheus:
+  prometheusSpec:
+    retention: 5d
 
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
 
-# Un dernier point à vérifier
-
-# Comme tu es sur EKS 1.33, je te conseille de lancer avant le changement :
-
-# kubectl get storageclass
-
-# et de me donner le résultat.
-
-# Je vérifierai que la StorageClass par défaut de ton cluster est bien compatible avec ce storageSpec (c'est souvent gp2, gp3 ou ebs-csi sur EKS). Si elle est correcte, tu n'auras rien d'autre à configurer.
-
-# prometheus:
-#   prometheusSpec:
-#     retention: 5d
-
-#     storageSpec:
-#       volumeClaimTemplate:
-#         spec:
-#           accessModes:
-#             - ReadWriteOnce
-
-#           resources:
-#             requests:
-#               storage: 1Gi
+          resources:
+            requests:
+              storage: 1Gi
