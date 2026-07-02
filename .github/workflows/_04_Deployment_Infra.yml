@@ -90,6 +90,9 @@ jobs:
             2>/dev/null \
             || aws s3 mb s3://project6-terraform-loki-${{ inputs.environment }}-230620261146 --region us-east-1
       
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Terraform init
         run: |
           terraform init \
@@ -235,6 +238,9 @@ jobs:
           repository: Project6-Organisation/Project6-Integration
           path: integration
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Terraform init
         run: |
           terraform init \
@@ -370,6 +376,9 @@ jobs:
         with:
           repository: Project6-Organisation/Project6-Integration
           path: integration
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform init
         run: |
