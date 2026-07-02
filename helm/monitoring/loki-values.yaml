@@ -19,24 +19,25 @@ loki:
     s3:
       region: us-east-1
 
-singleBinary:
-  replicas: 1
-  persistence:
-    enabled: false
-  extraVolumes:
-    - name: loki-data
-      emptyDir: {}
-  extraVolumeMounts:
-    - name: loki-data
-      mountPath: /var/loki
-
 # singleBinary:
 #   replicas: 1
 #   persistence:
-#     enabled: true
-#     size: 1Gi
-#     accessModes:
-#       - ReadWriteOnce
+#     enabled: false
+#   extraVolumes:
+#     - name: loki-data
+#       emptyDir: {}
+#   extraVolumeMounts:
+#     - name: loki-data
+#       mountPath: /var/loki
+
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true
+    storageClass: gp2
+    size: 1Gi
+    accessModes:
+      - ReadWriteOnce
 
 read:
   replicas: 0

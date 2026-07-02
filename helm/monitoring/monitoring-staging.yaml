@@ -46,13 +46,12 @@ prometheusOperator:
 prometheus:
   prometheusSpec:
     retention: 5d
-
     storageSpec:
       volumeClaimTemplate:
         spec:
+          storageClassName: gp2
           accessModes:
             - ReadWriteOnce
-
           resources:
             requests:
               storage: 1Gi

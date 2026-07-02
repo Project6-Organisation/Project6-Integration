@@ -1,4 +1,35 @@
-## Pour rafraichir les dashboards Grafana
+## Mettre à jour la partie monitoring
+
+Afin d'appliquer les nouvelles modifications faites des les fichiers de settings sur la partie monitoring, ouvrir une commande dans le Project6-Integration:
+
+```shell
+# Terminal
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-staging
+```
+
+Pour le staging - partie Prometheus (à adapter pour la prod) :
+
+Puis,
+
+```shell
+# Terminal
+helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  -f helm/monitoring/monitoring-staging.yaml
+```
+
+Pour le staging - partie Loki (à adapter pour la prod) :
+
+Puis,
+
+```shell
+# Terminal
+helm upgrade --install loki grafana/loki \
+  --namespace monitoring \
+  -f helm/monitoring/loki-values.yaml
+```
+
+## Rafraichir les dashboards Grafana
 
 Les dashboards sont localisés dans Project6-Integration\helm\monitoring\dashboards
 
@@ -27,7 +58,7 @@ kubectl rollout restart deployment monitoring-grafana -n monitoring
 
 Grafana est restart et les modifications prises en compte dans les dashboards
 
-## Pour accéder aux données Prometheus/Pushgateway
+## Accéder aux données Prometheus/Pushgateway
 
 Depuis une console
 
