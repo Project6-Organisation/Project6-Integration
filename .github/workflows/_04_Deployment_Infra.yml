@@ -137,6 +137,9 @@ jobs:
           repository: Project6-Organisation/Project6-Integration
           path: integration
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        
       - name: Terraform init
         run: |
           terraform init \

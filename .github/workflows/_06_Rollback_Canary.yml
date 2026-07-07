@@ -56,8 +56,6 @@ jobs:
 
           echo "### Rollback completed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Revision restored: ${{ inputs.revision }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
           echo "Application URL: http://$FRONTEND_URL" >> $GITHUB_STEP_SUMMARY
 
           echo "Current Helm revision:" >> $GITHUB_STEP_SUMMARY
