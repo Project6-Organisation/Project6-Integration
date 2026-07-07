@@ -1,32 +1,95 @@
-## Mettre à jour la partie monitoring
+## Appliquer des modifications helm - Application
 
-Afin d'appliquer les nouvelles modifications faites des les fichiers de settings sur la partie monitoring, ouvrir une commande dans le Project6-Integration:
+Afin d'appliquer les nouvelles modifications faites dans les fichiers de settings de l'application (values-prod.yaml et values-staging.yaml):
+
+Ouvrir une commande dans le Project6-Integration/helm:
+
+Pour staging:
 
 ```shell
 # Terminal
 aws eks update-kubeconfig --region us-east-1 --name project6-eks-staging
 ```
 
-Pour le staging - partie Prometheus (à adapter pour la prod) :
-
-Puis,
+Puis:
 
 ```shell
 # Terminal
-helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
-  --namespace monitoring \
-  -f helm/monitoring/monitoring-staging.yaml
+helm upgrade --install microcrm . -f values-staging.yaml --namespace microcrm-staging --create-namespace \ 
+  --wait --atomic --timeout 10m \
+  --set backend.image.tag=develop-1234567 \
+  --set frontend.image.tag=develop-1234567 \
+  --set ingress.baseDomain=olivierpflieger.fr \
+  --timeout 10m
 ```
 
-Pour le staging - partie Loki (à adapter pour la prod) :
+Pour prod: 
+
+```shell
+# Terminal
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-prod
+```
+
+```shell
+# Terminal
+helm upgrade --install microcrm . -f values-prod.yaml --namespace microcrm-prod --create-namespace \
+  --set backend.image.tag=v.1.8.0 \
+  --set frontend.image.tag=v.1.8.0 \
+  --set ingress.baseDomain=olivierpflieger.fr \
+  --timeout 10m
+```
+
+## Appliquer des modifications helm - Monitoring Prometheus
+
+Afin d'appliquer les nouvelles modifications faites dans les fichiers de settings sur la partie monitoring Prometheus:
+
+Ouvrir une commande dans le Project6-Integration:
+
+Pour staging:
+
+```shell
+# Terminal
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-staging
+```
 
 Puis,
 
 ```shell
 # Terminal
-helm upgrade --install loki grafana/loki \
-  --namespace monitoring \
-  -f helm/monitoring/loki-values.yaml
+helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring -f helm/monitoring/monitoring-staging.yaml
+```
+
+Pour prod:
+
+```shell
+# Terminal
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-prod
+```
+
+Puis,
+
+```shell
+# Terminal
+helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring -f helm/monitoring/monitoring-prod.yaml
+```
+
+Puis, forcer le rollout
+
+```shell
+kubectl rollout restart deployment/monitoring-grafana -n monitoring
+kubectl rollout status deployment/monitoring-grafana -n monitoring
+```
+
+
+## Appliquer des modifications helm - Monitoring Loki
+
+Afin d'appliquer les nouvelles modifications faites dans les fichiers de settings sur la partie monitoring Loki:
+
+Ouvrir une commande dans le Project6-Integration:
+
+```shell
+# Terminal
+helm upgrade --install loki grafana/loki --namespace monitoring -f helm/monitoring/loki-values.yaml
 ```
 
 ## Rafraichir les dashboards Grafana
@@ -60,7 +123,16 @@ Grafana est restart et les modifications prises en compte dans les dashboards
 
 ## Accéder aux données Prometheus/Pushgateway
 
-Depuis une console
+Ouvrir un terminal sur le répertoire /Project6-Integration/helm,
+
+Puis,
+
+```shell
+# Terminal
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-staging
+# ou
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-prod
+```
 
 ```shell
 # Terminal
@@ -121,3 +193,25 @@ dora_change_failure_total     = 1
 Le MTTR mesure le temps moyen pour restaurer le service après un incident.
 
 Aucun outil de ticketing n'est en place pour pouvoir calculer correctement cette métrique. Point ouvert..
+
+## Configurer le SMTP serveur pour les alertes Grafana / Prometheus
+
+Le serveur SMTP est configuré dans les fichiers de variables :
+
+Project6-Integration/helm/monitoring/monitoring-staging.yaml
+
+Project6-Integration/helm/monitoring/monitoring-prod.yaml
+
+Les secrets user / password sont à ajouter dans grafana-smtp-secret, de la manière suivante: 
+
+```shell
+# Terminal
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-staging
+ou
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-prod
+```
+
+kubectl create secret generic grafana-smtp-secret \
+  -n monitoring \
+  --from-literal=SMTP_USER='user' \
+  --from-literal=SMTP_PASSWORD='<password>'

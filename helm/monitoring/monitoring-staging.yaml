@@ -35,6 +35,31 @@ grafana:
       dashboard-dora:
         file: dashboards/dashboard-dora.json
 
+  grafana.ini:
+    smtp:
+      enabled: true
+      host: live.smtp.mailtrap.io:587
+      user: $__env{SMTP_USER}
+      password: $__env{SMTP_PASSWORD}
+      from_address: hello@demomailtrap.co
+      from_name: Grafana Alerts
+      startTLS_policy: MandatoryStartTLS
+
+  envFromSecret: grafana-smtp-secret
+
+  alerting:
+    contactpoints.yaml:
+      apiVersion: 1
+      contactPoints:
+        - orgId: 1
+          name: email-devops
+          receivers:
+            - uid: email-devops
+              type: email
+              settings:
+                addresses: keryss@gmail.com
+                singleEmail: false
+
 prometheusOperator:
   admissionWebhooks:
     enabled: false

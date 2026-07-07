@@ -5,10 +5,26 @@ backend:
     tag: develop-16c2d7a
   replicas: 1
 
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
 frontend:
   image:
     tag: develop-16c2d7a
   replicas: 1
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
 
 ingress:
   enabled: true

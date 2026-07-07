@@ -36,3 +36,5 @@ spec:
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.backend.containerPort }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}

@@ -35,6 +35,96 @@ grafana:
       dashboard-dora:
         file: dashboards/dashboard-dora.json
 
+  grafana.ini:
+    smtp:
+      enabled: true
+      host: live.smtp.mailtrap.io:587
+      user: $__env{SMTP_USER}
+      password: $__env{SMTP_PASSWORD}
+      from_address: hello@demomailtrap.co
+      from_name: Grafana Alerts
+      startTLS_policy: MandatoryStartTLS
+
+  envFromSecret: grafana-smtp-secret
+
+  alerting:
+    contactpoints.yaml:
+      apiVersion: 1
+      contactPoints:
+        - orgId: 1
+          name: email-devops
+          receivers:
+            - uid: email-devops
+              type: email
+              settings:
+                addresses: keryss@gmail.com
+                singleEmail: false
+
+    policies.yaml:
+      apiVersion: 1
+      policies:
+        - orgId: 1
+          receiver: email-devops
+          group_by:
+            - grafana_folder
+            - alertname
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 4h
+
+    rules.yaml:
+      apiVersion: 1
+      groups:
+        - orgId: 1
+          name: kubernetes-alerts
+          folder: Kubernetes
+          interval: 1m
+          rules:
+            - uid: pod-crashloopbackoff
+              title: Pod CrashLoopBackOff
+              condition: C
+              data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 300
+                    to: 0
+                  datasourceUid: prometheus
+                  model:
+                    expr: kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff", namespace=~"microcrm-.*"}
+                    refId: A
+                    instant: true
+                - refId: B
+                  datasourceUid: __expr__
+                  model:
+                    type: reduce
+                    expression: A
+                    reducer: max
+                    refId: B
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    type: threshold
+                    expression: B
+                    conditions:
+                      - evaluator:
+                          type: gt
+                          params: [0]
+                        operator:
+                          type: and
+                        reducer:
+                          type: last
+                        type: query
+                    refId: C
+              noDataState: OK
+              execErrState: Error
+              for: 1m
+              annotations:
+                summary: "Pod en CrashLoopBackOff"
+                description: "Un pod applicatif est en CrashLoopBackOff dans le namespace {{`{{ $labels.namespace }}`}}."
+              labels:
+                severity: critical
+                team: devops
+
 prometheusOperator:
   admissionWebhooks:
     enabled: false
