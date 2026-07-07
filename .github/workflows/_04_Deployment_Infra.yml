@@ -118,7 +118,7 @@ jobs:
       
   deploy-addons:
 
-    needs: create-infra
+    # needs: create-infra
     if: inputs.action == 'apply'
 
     # runs-on: [self-hosted, project6]
