@@ -54,11 +54,8 @@ jobs:
 
     needs: Check-variables
     
-    # Desactivation temporaire du build
-    if: false
-    # if: inputs.action == 'plan' || inputs.action == 'apply'
-    # End desactivation temporaire du build
-
+    if: inputs.action == 'plan' || inputs.action == 'apply'
+    
     # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
     
