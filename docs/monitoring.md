@@ -80,6 +80,35 @@ kubectl rollout restart deployment/monitoring-grafana -n monitoring
 kubectl rollout status deployment/monitoring-grafana -n monitoring
 ```
 
+## Analyser les pods de monitoring
+
+Afin d'analyser les pods de monitoring, ouvrir une commande dans le Project6-Integration:
+
+Pour prod (à adapter pour staging):
+
+```shell
+# Terminal
+aws eks update-kubeconfig --region us-east-1 --name project6-eks-prod
+```
+
+Puis,
+
+```shell
+kubectl get pods -n monitoring
+```
+
+Pour voir le détail d'un pod
+
+```shell
+kubectl describe pod pod-name -n monitoring
+```
+
+Pour check les logs d'un pod en particulier
+
+```shell
+kubectl logs pod-name -n monitoring
+```
+
 
 ## Appliquer des modifications helm - Monitoring Loki
 
@@ -211,7 +240,12 @@ ou
 aws eks update-kubeconfig --region us-east-1 --name project6-eks-prod
 ```
 
+Puis,
+
+```shell
+# Terminal
 kubectl create secret generic grafana-smtp-secret \
   -n monitoring \
   --from-literal=SMTP_USER='user' \
   --from-literal=SMTP_PASSWORD='<password>'
+```

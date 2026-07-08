@@ -80,8 +80,8 @@ grafana:
           folder: Kubernetes
           interval: 1m
           rules:
-            - uid: pod-crashloopbackoff
-              title: Pod CrashLoopBackOff
+            - uid: pod-memory-usage-high
+              title: Pod Memory Usage High
               condition: C
               data:
                 - refId: A
@@ -90,9 +90,14 @@ grafana:
                     to: 0
                   datasourceUid: prometheus
                   model:
-                    expr: kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff", namespace=~"microcrm-.*"}
+                    expr: |
+                      100 *
+                      container_memory_working_set_bytes{namespace=~"microcrm-.*", container!="", image!=""}
+                      /
+                      kube_pod_container_resource_limits{namespace=~"microcrm-.*", resource="memory", container!=""}
                     refId: A
                     instant: true
+
                 - refId: B
                   datasourceUid: __expr__
                   model:
@@ -100,6 +105,7 @@ grafana:
                     expression: A
                     reducer: max
                     refId: B
+
                 - refId: C
                   datasourceUid: __expr__
                   model:
@@ -115,14 +121,15 @@ grafana:
                           type: last
                         type: query
                     refId: C
+
               noDataState: OK
               execErrState: Error
-              for: 1m
+              for: 30s
               annotations:
-                summary: "Pod en CrashLoopBackOff"
-                description: "Un pod applicatif est en CrashLoopBackOff dans le namespace {{`{{ $labels.namespace }}`}}."
+                summary: "RAM pod supérieure au seuil"
+                description: "Un container applicatif dépasse le seuil RAM configuré."
               labels:
-                severity: critical
+                severity: warning
                 team: devops
 
 prometheusOperator:
