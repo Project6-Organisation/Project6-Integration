@@ -73,13 +73,6 @@ Puis,
 helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring -f helm/monitoring/monitoring-prod.yaml
 ```
 
-Puis, forcer le rollout
-
-```shell
-kubectl rollout restart deployment/monitoring-grafana -n monitoring
-kubectl rollout status deployment/monitoring-grafana -n monitoring
-```
-
 ## Analyser les pods de monitoring
 
 Afin d'analyser les pods de monitoring, ouvrir une commande dans le Project6-Integration:

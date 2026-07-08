@@ -76,61 +76,63 @@ grafana:
       apiVersion: 1
       groups:
         - orgId: 1
-          name: kubernetes-alerts
+          name: alertes microcrm
           folder: Kubernetes
           interval: 1m
           rules:
-            - uid: pod-memory-usage-high
+            - uid: afrht8s81y58ge
               title: Pod Memory Usage High
               condition: C
               data:
                 - refId: A
                   relativeTimeRange:
-                    from: 300
+                    from: 600
                     to: 0
                   datasourceUid: prometheus
                   model:
-                    expr: |
-                      100 *
-                      container_memory_working_set_bytes{namespace=~"microcrm-.*", container!="", image!=""}
-                      /
-                      kube_pod_container_resource_limits{namespace=~"microcrm-.*", resource="memory", container!=""}
-                    refId: A
+                    editorMode: code
+                    expr: "100 *\r\n(\r\n  container_memory_working_set_bytes{namespace=~\"microcrm-.*\", container!=\"\", image!=\"\"}\r\n/\r\non(namespace,pod,container)\r\n  kube_pod_container_resource_limits{namespace=~\"microcrm-.*\", resource=\"memory\"}\r\n)"
                     instant: true
-
-                - refId: B
-                  datasourceUid: __expr__
-                  model:
-                    type: reduce
-                    expression: A
-                    reducer: max
-                    refId: B
-
+                    intervalMs: 1000
+                    legendFormat: __auto
+                    maxDataPoints: 43200
+                    range: false
+                    refId: A
                 - refId: C
+                  queryType: expression
                   datasourceUid: __expr__
                   model:
-                    type: threshold
-                    expression: B
                     conditions:
-                      - evaluator:
-                          type: gt
-                          params: [0]
-                        operator:
-                          type: and
-                        reducer:
-                          type: last
-                        type: query
+                        - evaluator:
+                            params:
+                                - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - C
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: A
+                    intervalMs: 1000
+                    maxDataPoints: 43200
                     refId: C
-
-              noDataState: OK
+                    type: threshold
+              noDataState: NoData
               execErrState: Error
-              for: 30s
+              for: 1m
               annotations:
-                summary: "RAM pod supérieure au seuil"
-                description: "Un container applicatif dépasse le seuil RAM configuré."
-              labels:
-                severity: warning
-                team: devops
+                summary: test
+              labels: {}
+              isPaused: false
+              notification_settings:
+                receiver: email-devops
 
 prometheusOperator:
   admissionWebhooks:
