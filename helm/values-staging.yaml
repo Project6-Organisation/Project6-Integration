@@ -2,7 +2,7 @@ namespace: microcrm-staging
 
 backend:
   image:
-    tag: develop-16c2d7a
+    tag:
   replicas: 1
 
   resources:
@@ -15,7 +15,7 @@ backend:
 
 frontend:
   image:
-    tag: develop-16c2d7a
+    tag:
   replicas: 1
 
   resources:
