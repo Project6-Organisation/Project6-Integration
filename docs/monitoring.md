@@ -15,7 +15,7 @@ Puis:
 
 ```shell
 # Terminal
-helm upgrade --install microcrm . -f values-staging.yaml --namespace microcrm-staging --create-namespace \ 
+helm upgrade --install microcrm . -f values-staging.yaml --namespace microcrm-staging --create-namespace \
   --wait --atomic --timeout 10m \
   --set backend.image.tag=develop-1234567 \
   --set frontend.image.tag=develop-1234567 \
