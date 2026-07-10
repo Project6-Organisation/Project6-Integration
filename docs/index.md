@@ -9,8 +9,15 @@
 
 ## Documentation
 
-[Pipeline CI/CD](pipeline.md)
+[Guide de démarrage local Back-End et Front-End](https://github.com/Project6-Organisation/Project6-Application/blob/develop/README.md)
 
-<!-- - [Guide de démarrage local Back-End et Front-End](https://github.com/Project6-Organisation/Project6-Application/blob/develop/README.md)
+- [Pipeline CI/CD](pipeline.md)
+- [Pipeline Infrastructure](pipeline-infra.md)
+- [Pipeline Rollback](pipeline-rollback.md)
+
+- [Commandes monitoring](monitoring.md)
+
+- [Commandes utiles Front-End](frontend.md)
+- [Tests Front-End](testing-frontend.md)
+- [Commandes utiles Back-End](backend.md)
 - [Tests Back-End](testing-backend.md)
-- [Tests Front-End](testing-frontend.md) -->

@@ -16,4 +16,10 @@ theme:
         name: Passer en mode clair
 nav:
   - Accueil: index.md
-  - Pipeline: pipeline.md  
+  - Pipeline: pipeline.md
+  - Pipeline infra: pipeline-infra.md
+  - Pipeline Rollback: pipeline-rollback.md
+  - Commandes Back-End : backend.md
+  - Tests Back-End : testing-backend.md
+  - Commandes Front-End : frontend.md
+  - Tests Front-End : testing-frontend.md

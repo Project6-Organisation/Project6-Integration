@@ -175,47 +175,6 @@ dora_lead_time_seconds 240
 EOF
 ```
 
-## Explication des métriques
-
-### Deployment Frequency (DF) et Lead Time (LD)
-
-DF mesure le nombre de déploiement en PROD sur une période donnée.
-
-LD mesure le temps écoulé entre la date/heure du déploiement effectif et la date/heure du premier commit trouvé dans la merge request
-
-Déclenchement : Merge PR de develop => main
-
-S'applique à la fin du workflow de déploiement en PROD
-
-Push la métrique suivante
-
-```shell
-dora_deployment_total         = 1
-dora_deployment_success_total = 1
-dora_change_failure_total     = 0
-dora_lead_time_seconds $LEAD_TIME_SECONDS 
-```
-
-### Change Failure Rate (CFR)
-
-Mesure le nombre de rollback par rapport au nombre de déploiement effecutés en PROD
-
-S'applique sur un rollback
-
-Push la métrique suivante
-
-```shell
-dora_deployment_total         = 1
-dora_deployment_success_total = 0
-dora_change_failure_total     = 1
-```
-
-### Mean Time To Recover (MTTR)
-
-Le MTTR mesure le temps moyen pour restaurer le service après un incident.
-
-Aucun outil de ticketing n'est en place pour pouvoir calculer correctement cette métrique. Point ouvert..
-
 ## Configurer le SMTP serveur pour les alertes Grafana / Prometheus
 
 Le serveur SMTP est configuré dans les fichiers de variables :
