@@ -36,53 +36,23 @@ flowchart TD
     C --> E{Choix de l'action}
     D --> E
 
-    E -->|plan| F[Terraform Plan]
-    E -->|apply| G[Terraform Apply]
-    E -->|destroy| H[Terraform Destroy]
+    E -->|plan| F[Terraform<br/>init, fmt, validate]
+    E -->|apply| AA[Terraform<br/>init, fmt, validate]
+    E -->|destroy| DA[Terraform<br/>init, fmt, validate]
+    
+    AA --> AB[terraform plan]
+    AB --> AC[terraform apply]
+    AC --> AD[AWS Services<br/>VPC, Subnets, EKS, ALB, IAM ...]
+    AD --> AE[Création du cluster EKS]    
+    AE --> AF[Installation des Add-ons EKS Rollout...]    
+    AF --> AG[Installation du monitoring]
+    AG --> AH[Infrastructure AWS créée / modifiée]
 
-    subgraph INIT["Initialisation du job"]
-        I[Checkout du dépôt Integration]
-        J[Installation de Terraform]
-        K[Configuration des identifiants AWS]
-        L[Terraform Init<br/>Backend S3 selon environnement]
-
-        I --> J
-        J --> K
-        K --> L
-    end
-
-    F --> I
-    G --> I
-    H --> I
-
-    L --> M[Chargement du fichier<br/>envs/environment.tfvars]
-
-    M --> N{Action demandée}
-
-    N -->|plan| O[terraform plan<br/>Création de tfplan]
-    N -->|apply| P[terraform plan<br/>Création de tfplan]
-    N -->|destroy| Q[terraform destroy<br/>auto-approve]
-
-    P --> R[terraform apply<br/>tfplan]
-
-    O --> S[Affichage des changements prévus]
-    R --> T[Infrastructure AWS créée ou mise à jour]
-    Q --> U[Infrastructure AWS supprimée]
-
-    T --> V[Création du VPC]
-    T --> W[Création du cluster EKS]
-    T --> X[Création du Node Group]
-    T --> Y[Installation des Add-ons EKS]
-    T --> Z[Mise à jour du kubeconfig]
-
-    V --> AA[Subnets publics et privés]
-    V --> AB[NAT Gateway et routage]
-
-    W --> AC[Control Plane EKS]
-    X --> AD[Instances EC2 Worker Nodes]
-
-    Y --> AE[VPC CNI]
-    Y --> AF[CoreDNS]
-    Y --> AG[kube-proxy]
+    DA --> DB[terraform destroy<br/>tfplan]    
+    DB --> DC[Suppression des Add-ons EKS Rollout...]
+    DC --> DD[Suppression du monitoring]
+    DD --> DE[Suppression AWS Services<br/>VPC, Subnets, EKS, ALB, IAM ...]
+    DE --> DF[Suprression du cluster EKS]    
+    DF --> DG[Infrastructure AWS supprimée]
     
 ```
