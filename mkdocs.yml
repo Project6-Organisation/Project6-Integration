@@ -19,7 +19,15 @@ nav:
   - Pipeline: pipeline.md
   - Pipeline infra: pipeline-infra.md
   - Pipeline Rollback: pipeline-rollback.md
+  - Commandes Monitoring: monitoring.md
   - Commandes Back-End : backend.md
   - Tests Back-End : testing-backend.md
   - Commandes Front-End : frontend.md
   - Tests Front-End : testing-frontend.md
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
