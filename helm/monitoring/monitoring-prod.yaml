@@ -91,7 +91,14 @@ grafana:
                   datasourceUid: prometheus
                   model:
                     editorMode: code
-                    expr: "100 *\r\n(\r\n  container_memory_working_set_bytes{namespace=~\"microcrm-.*\", container!=\"\", image!=\"\"}\r\n/\r\non(namespace,pod,container)\r\n  kube_pod_container_resource_limits{namespace=~\"microcrm-.*\", resource=\"memory\"}\r\n)"
+                    expr: |
+                      100 *
+                      (
+                        container_memory_working_set_bytes{namespace=~"microcrm-.*", container!="", image!=""}
+                        /
+                        on(namespace,pod,container)
+                        kube_pod_container_resource_limits{namespace=~"microcrm-.*", resource="memory"}
+                      )
                     instant: true
                     intervalMs: 1000
                     legendFormat: __auto
@@ -103,22 +110,22 @@ grafana:
                   datasourceUid: __expr__
                   model:
                     conditions:
-                        - evaluator:
-                            params:
-                                - 80
-                            type: gt
-                          operator:
-                            type: and
-                          query:
-                            params:
-                                - C
-                          reducer:
-                            params: []
-                            type: last
-                          type: query
+                      - evaluator:
+                          params:
+                            - 80
+                          type: gt
+                        operator:
+                          type: and
+                        query:
+                          params:
+                            - C
+                        reducer:
+                          params: []
+                          type: last
+                        type: query
                     datasource:
-                        type: __expr__
-                        uid: __expr__
+                      type: __expr__
+                      uid: __expr__
                     expression: A
                     intervalMs: 1000
                     maxDataPoints: 43200
@@ -128,7 +135,68 @@ grafana:
               execErrState: Error
               for: 1m
               annotations:
-                summary: test
+                summary: Pod memory usage above 80%
+              labels: {}
+              isPaused: false
+              notification_settings:
+                receiver: email-devops
+
+            - uid: cpuusagehigh
+              title: Pod CPU Usage High
+              condition: C
+              data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 600
+                    to: 0
+                  datasourceUid: prometheus
+                  model:
+                    editorMode: code
+                    expr: |
+                      100 *
+                      (
+                        rate(container_cpu_usage_seconds_total{namespace=~"microcrm-.*", container!="", image!=""}[5m])
+                        /
+                        on(namespace,pod,container)
+                        kube_pod_container_resource_limits{namespace=~"microcrm-.*", resource="cpu"}
+                      )
+                    instant: true
+                    intervalMs: 1000
+                    legendFormat: __auto
+                    maxDataPoints: 43200
+                    range: false
+                    refId: A
+                - refId: C
+                  queryType: expression
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                      - evaluator:
+                          params:
+                            - 80
+                          type: gt
+                        operator:
+                          type: and
+                        query:
+                          params:
+                            - C
+                        reducer:
+                          params: []
+                          type: last
+                        type: query
+                    datasource:
+                      type: __expr__
+                      uid: __expr__
+                    expression: A
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: C
+                    type: threshold
+              noDataState: NoData
+              execErrState: Error
+              for: 1m
+              annotations:
+                summary: Pod CPU usage above 80%
               labels: {}
               isPaused: false
               notification_settings:
