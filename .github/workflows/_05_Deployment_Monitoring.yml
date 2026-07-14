@@ -21,7 +21,6 @@ jobs:
   
   deploy-monitoring:
 
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
     
     name: Deploy Monitoring Stack

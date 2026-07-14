@@ -20,7 +20,6 @@ jobs:
   
   Check-variables:
     
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
         
     steps:      
@@ -47,7 +46,6 @@ jobs:
     needs:
       - Check-variables
 
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
     
     outputs:
@@ -129,51 +127,12 @@ jobs:
           
           echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
           echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
-      
-      # - name: Update package.json version
-      #   if : steps.semantic-release.outputs.new_release_published == 'true'
-      #   uses: restackio/update-json-file-action@2.1
-      #   with:
-      #     file: front/package.json
-      #     fields: "{\"version\": \"${{ steps.semantic-release.outputs.new_release_version }}\"}"
-
-      # - name: Commit files
-      #   if: steps.semantic-release.outputs.new_release_published == 'true'
-      #   run: |
-      #     git config user.name "github-actions"
-      #     git config user.email "github-actions@github.com"
-
-      #     git add front/package.json
-      #     git add CHANGELOG.md
-  
-      #     git commit -m "chore(release): ${{ steps.semantic-release.outputs.new_release_version }} [skip ci]"
-
-      #     git push
-
-      # - name: Update build.gradle version
-      #   if : steps.semantic-release.outputs.new_release_published == 'true'
-      #   run: |
-      #     sed -i "s/^version = .*/version = '${{ steps.semantic-release.outputs.new_release_version }}'/" build.gradle
-            
-      # - name: Commit files
-      #   if: steps.semantic-release.outputs.new_release_published == 'true'
-      #   run: |
-      #     git config user.name "github-actions"
-      #     git config user.email "github-actions@github.com"
-
-      #     git add build.gradle
-      #     git add CHANGELOG.md
-  
-      #     git commit -m "chore(release): ${{ steps.semantic-release.outputs.new_release_version }} [skip ci]"
-
-      #     git push
-  
+              
   Docker_Build_BackEnd:
 
     needs:
       - Semantic_Release
 
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
 
     defaults:
@@ -237,7 +196,6 @@ jobs:
     needs:
       - Semantic_Release
     
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
 
     environment: ${{ inputs.environment }}

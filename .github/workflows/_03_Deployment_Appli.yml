@@ -26,7 +26,6 @@ jobs:
   
   deploy-helm:
         
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
 
     environment: ${{ inputs.environment }}
@@ -164,20 +163,8 @@ jobs:
         run: |
           kubectl get pods -n microcrm-${{ inputs.environment }}
           kubectl get svc -n microcrm-${{ inputs.environment }}
-        
-      # WITH GITHUB RUNNER
-      # - name: Set up Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: "3.12"
-
-      # - name: Install Python dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     python -m pip install requests
       
-      - name: push DORA metrics
-        #  Switch to prod !!!!
+      - name: push DORA metrics        
         if: inputs.environment == 'prod'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -209,7 +196,6 @@ jobs:
             
   zap_scan-BackEnd:
   
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
     
     name: Scan the BackEnd application with OWASP ZAP
@@ -220,11 +206,7 @@ jobs:
 
     env:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
-
-    # Desactivation temporaire du build
-    #if: false
-    # End desactivation temporaire du build
-  
+      
     steps:
 
       - name: Show URL to scan
@@ -244,7 +226,6 @@ jobs:
 
   zap_scan-FrontEnd:
   
-    # runs-on: [self-hosted, project6]
     runs-on: ubuntu-latest
     
     name: Scan the FrontEnd application with OWASP ZAP
@@ -255,11 +236,7 @@ jobs:
 
     env:
       BASE_DOMAIN: ${{ vars.BASE_DOMAIN }}
-
-    # Desactivation temporaire du build
-    #if: false    
-    # End desactivation temporaire du build
-  
+ 
     steps:
 
       - name: Show URL to scan
