@@ -201,3 +201,12 @@ kubectl create secret generic grafana-smtp-secret \
   --from-literal=SMTP_USER='user' \
   --from-literal=SMTP_PASSWORD='<password>'
 ```
+
+## Afficher les logs du FrontEnd dans la console
+
+```shell
+kubectl logs -n microcrm-staging deployment/microcrm-frontend -f \
+| jq -r 'select(.logger == "http.log.access.log0")
+  | select(.request.headers["User-Agent"][0] != "ELB-HealthChecker/2.0")
+  | "\(.ts | strftime("%H:%M:%S")) \(.request.method) \(.request.uri) -> \(.status) (\(.duration * 1000 | floor) ms)"'
+```

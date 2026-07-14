@@ -239,7 +239,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: "https://microcrm-api.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
           docker_name: zaproxy/zap-stable
-          fail_action: false
+          fail_action: true
           artifact_name: "zap_report_backend.html"
 
   zap_scan-FrontEnd:
@@ -274,5 +274,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: "https://microcrm.${{ inputs.environment }}.${{ vars.BASE_DOMAIN }}"
           docker_name: zaproxy/zap-stable
-          fail_action: false
+          fail_action: true
           artifact_name: "zap_report_frontend.html"
