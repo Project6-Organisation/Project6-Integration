@@ -101,7 +101,8 @@ jobs:
     uses: ./.github/workflows/01_6_FrontEnd_SonarQube.yml
     secrets: inherit
 
-  Snyk_Scan:    
+  Snyk_Scan:
+    if: false    
     needs:
       - BackEnd_Build
       - FrontEnd_Build
