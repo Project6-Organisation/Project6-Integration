@@ -19,7 +19,7 @@ nav:
   - Pipeline: pipeline.md
   - Pipeline infra: pipeline-infra.md
   - Pipeline Rollback: pipeline-rollback.md
-  - Commandes Monitoring: monitoring.md
+  - Commandes principales: monitoring.md
   - Commandes Back-End : backend.md
   - Tests Back-End : testing-backend.md
   - Commandes Front-End : frontend.md
