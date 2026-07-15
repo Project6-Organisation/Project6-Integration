@@ -15,7 +15,7 @@
 - [Pipeline Infrastructure](pipeline-infra.md)
 - [Pipeline Rollback](pipeline-rollback.md)
 
-- [Commandes monitoring](monitoring.md)
+- [Commandes principales](monitoring.md)
 
 - [Commandes utiles Front-End](frontend.md)
 - [Tests Front-End](testing-frontend.md)
