@@ -16,7 +16,7 @@ common_tags = {
 node_groups = [
   {
     name           = "project6-eks-prod-NodeGroup"
-    instance_types = ["t3.medium"]
+    instance_types = ["t3.large"]
     ami_type       = "AL2023_x86_64_STANDARD"
     capacity_type  = "ON_DEMAND"
     disk_size      = 20
